@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Google Messages Clone UI</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
     <style>
@@ -14,18 +14,24 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        body {
+        html, body {
+            width: 100vw;
+            height: 100vh;
             background-color: #f8f9fa;
+            overflow: hidden;
+            position: fixed;
+        }
+
+        body {
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
         }
 
         .app-container {
-            width: 100%;
-            max-width: 412px;
+            width: 100vw;
             height: 100vh;
+            max-width: 412px;
             background-color: #ffffff;
             position: relative;
             display: flex;
@@ -69,16 +75,19 @@
             display: flex;
             flex-direction: column;
             height: 100%;
+            width: 100%;
         }
 
+        /* Header Fix: Cut na ho */
         .header-search {
-            margin: 12px 16px;
+            margin: 10px 14px;
             padding: 8px 16px;
             background-color: #f1f3f4;
             border-radius: 28px;
             display: flex;
             align-items: center;
             gap: 12px;
+            flex-shrink: 0;
         }
 
         .header-search span.search-icon {
@@ -88,9 +97,12 @@
 
         .header-title {
             flex: 1;
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             color: #3c4043;
             font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .profile-avatar {
@@ -104,6 +116,7 @@
             justify-content: center;
             font-weight: 500;
             font-size: 15px;
+            flex-shrink: 0;
         }
 
         .chat-list {
@@ -233,18 +246,22 @@
             transform: translateX(0);
         }
 
+        /* Top Bar Header Alignment Fix */
         .chat-header {
             display: flex;
             align-items: center;
             padding: 10px 14px;
             gap: 12px;
             border-bottom: 1px solid #e8eaed;
+            background-color: #ffffff;
+            flex-shrink: 0;
         }
 
         .chat-header .back-btn {
             cursor: pointer;
             color: #3c4043;
             font-size: 24px;
+            flex-shrink: 0;
         }
 
         .chat-header .header-info {
@@ -252,6 +269,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            overflow: hidden;
         }
 
         .header-avatar {
@@ -264,18 +282,23 @@
             color: white;
             font-weight: 500;
             font-size: 1.1rem;
+            flex-shrink: 0;
         }
 
         .chat-header .header-info h4 {
             font-size: 1.05rem;
             color: #202124;
             font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .chat-header-actions {
             display: flex;
-            gap: 16px;
+            gap: 14px;
             color: #5f6368;
+            flex-shrink: 0;
         }
 
         .chat-header-actions span {
@@ -297,7 +320,7 @@
             text-align: center;
             font-size: 0.75rem;
             color: #70757a;
-            margin: 12px 0 6px 0;
+            margin: 10px 0 4px 0;
         }
 
         .msg-bubble {
@@ -323,6 +346,14 @@
             border-top-right-radius: 4px;
         }
 
+        .msg-time-sub {
+            font-size: 0.68rem;
+            color: #70757a;
+            margin-top: 4px;
+            text-align: right;
+            display: block;
+        }
+
         .sending-status {
             align-self: flex-end;
             font-size: 0.75rem;
@@ -346,14 +377,18 @@
             font-size: 0.82rem;
             color: #5f6368;
             line-height: 1.4;
+            flex-shrink: 0;
         }
 
+        /* Niche message ok input area */
         .input-bar {
             display: flex;
             align-items: center;
             padding: 8px 12px;
             gap: 8px;
             background-color: #ffffff;
+            border-top: 1px solid #e8eaed;
+            flex-shrink: 0;
         }
 
         .sim-picker {
@@ -367,6 +402,7 @@
             padding: 4px 8px;
             border-radius: 12px;
             background-color: #e8f0fe;
+            flex-shrink: 0;
         }
 
         .input-wrapper {
@@ -392,6 +428,7 @@
             display: flex;
             gap: 8px;
             color: #5f6368;
+            flex-shrink: 0;
         }
 
         .input-actions span {
@@ -408,6 +445,7 @@
             align-items: center;
             justify-content: center;
             padding: 4px;
+            flex-shrink: 0;
         }
     </style>
 </head>
@@ -420,6 +458,7 @@
         </div>
     </div>
 
+    <!-- MAIN INBOX SCREEN -->
     <div class="main-screen">
         <div class="header-search">
             <span class="material-icons-outlined search-icon">search</span>
@@ -435,6 +474,7 @@
         </button>
     </div>
 
+    <!-- CHAT DETAIL SCREEN -->
     <div class="chat-screen" id="chatScreen">
         <div class="chat-header">
             <span class="material-icons-outlined back-btn" onclick="closeChat()">arrow_back</span>
@@ -479,7 +519,6 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <script>
-    // Exact Config connecting to your Realtime Database
     const firebaseConfig = {
       databaseURL: "https://mysmsbridge-8f994-default-rtdb.firebaseio.com/"
     };
@@ -497,31 +536,31 @@
             canReply: true,
             history: [
                 { type: "date", text: "Sunday • 1:58 PM" },
-                { type: "received", text: "Rs 150.00 sent to MUHAMMAD HAMZA NAZEER, A/C: ********5471 on 02/08/2026 at 13:58:10. Fee: Rs 0.00, TID:719420566836 via JazzCash" },
+                { type: "received", text: "Rs 150.00 sent to MUHAMMAD HAMZA NAZEER, A/C: ********5471 on 02/08/2026 at 13:58:10. Fee: Rs 0.00, TID:719420566836 via JazzCash", time: "1:58 PM" },
                 { type: "date", text: "Sunday • 3:29 PM" },
-                { type: "received", text: "Dear Customer, Rs 1 has been deducted from your account. It will be transferred to beneficiary account within 30 minutes. Please dial *786*1*6*1# to cancel this transaction." },
+                { type: "received", text: "Dear Customer, Rs 1 has been deducted from your account. It will be transferred to beneficiary account within 30 minutes. Please dial *786*1*6*1# to cancel this transaction.", time: "3:29 PM" },
                 { type: "sent", text: "2 Jazz", isSendingTag: true },
-                { type: "received", text: "Dear Customer, Funds transfer of Rs 1 to AZIZ BIBI, 923084191378 cancelled successfully. Fee 0.00. TID 719428997080." },
+                { type: "received", text: "Dear Customer, Funds transfer of Rs 1 to AZIZ BIBI, 923084191378 cancelled successfully. Fee 0.00. TID 719428997080.", time: "3:31 PM" },
                 { type: "sent", text: "1 Jazz", isSendingTag: true },
-                { type: "received", text: "Dear SHABANA BIBI, Amount of Rs 1.00 has been successfully sent to MUDDASIR ARBAS of IBAN No..." },
+                { type: "received", text: "Dear SHABANA BIBI, Amount of Rs 1.00 has been successfully sent to MUDDASIR ARBAS of IBAN No...", time: "3:35 PM" },
                 { type: "sent", text: "2 Jazz", isSendingTag: true },
                 { type: "date", text: "Thursday • 11:23 PM" },
-                { type: "received", text: "Rs 650.00 paid to HOT BITE PIZZA AND FAST FOOD, TID: 983843924 on 30/07/2026 at 23:23:20. Fee 0.00, TID: 719171203226 via QR Code." },
+                { type: "received", text: "Rs 650.00 paid to HOT BITE PIZZA AND FAST FOOD, TID: 983843924 on 30/07/2026 at 23:23:20. Fee 0.00, TID: 719171203226 via QR Code.", time: "11:23 PM" },
                 { type: "sent", text: "1 Jazz", isSendingTag: true },
                 { type: "date", text: "Friday • 7:28 AM" },
-                { type: "received", text: "Rs 22.79 is your available balance on JazzCash Mobile A/C: SHABANA BIBI Fee: 0.58, as of 31/07/2026 at 07:28:22 AM." },
+                { type: "received", text: "Rs 22.79 is your available balance on JazzCash Mobile A/C: SHABANA BIBI Fee: 0.58, as of 31/07/2026 at 07:28:22 AM.", time: "7:28 AM" },
                 { type: "sent", text: "2 Jazz", isSendingTag: true },
                 { type: "date", text: "Friday • 9:54 AM" },
-                { type: "received", text: "Mobile Bundle Mahana 6GB for Prepaid number 923084191378 of Rs 250.00 has been purchased on 31/07/2026. Fee: Rs 0.00, TID: 719194768..." },
+                { type: "received", text: "Mobile Bundle Mahana 6GB for Prepaid number 923084191378 of Rs 250.00 has been purchased on 31/07/2026. Fee: Rs 0.00, TID: 719194768...", time: "9:54 AM" },
                 { type: "date", text: "Monday • 7:23 PM" },
-                { type: "received", text: "Dear User, MPIN entered is not correct. If you do not remember the MPIN please dial *786*6*1*2# to reset your MPIN." },
+                { type: "received", text: "Dear User, MPIN entered is not correct. If you do not remember the MPIN please dial *786*6*1*2# to reset your MPIN.", time: "7:23 PM" },
                 { type: "sent", text: "2 Jazz", isSendingTag: true },
-                { type: "received", text: "Your transaction have failed, reason :CARD NOT ON FILE..TID:719550090103." },
-                { type: "received", text: "Your transaction have failed, reason :INVALID ACCOUNT..TID:719550180587." },
-                { type: "received", text: "Rs 780.46 is your available balance on JazzCash Mobile A/C: AZIZ BIBI Fee: 0.58, as of 03/08/2026 at 07:45:44 PM." },
+                { type: "received", text: "Your transaction have failed, reason :CARD NOT ON FILE..TID:719550090103.", time: "7:24 PM" },
+                { type: "received", text: "Your transaction have failed, reason :INVALID ACCOUNT..TID:719550180587.", time: "7:25 PM" },
+                { type: "received", text: "Rs 780.46 is your available balance on JazzCash Mobile A/C: AZIZ BIBI Fee: 0.58, as of 03/08/2026 at 07:45:44 PM.", time: "7:45 PM" },
                 { type: "sent", text: "1 Jazz", isSendingTag: true },
                 { type: "date", text: "Monday • 9:39 PM" },
-                { type: "received", text: "Rs 779.88 is your available balance on JazzCash Mobile A/C: AZIZ BIBI Fee: 0.58, as of 03/08/2026 at 09:39:14 PM." },
+                { type: "received", text: "Rs 779.88 is your available balance on JazzCash Mobile A/C: AZIZ BIBI Fee: 0.58, as of 03/08/2026 at 09:39:14 PM.", time: "9:39 PM" },
                 { type: "sent", text: "2 Jazz", isSendingTag: true }
             ]
         },
@@ -544,7 +583,7 @@
 
         renderChatList();
         
-        // Dynamic Live Event Listener from Firebase
+        // Firebase Live Message Listener
         database.ref('sms_messages').limitToLast(1).on('child_added', (snapshot) => {
             const data = snapshot.val();
             if (data && data.sender === "8558") {
@@ -553,14 +592,36 @@
         });
     });
 
+    // Exact Live Time Format Handler
+    function getLiveFormattedTime() {
+        const now = new Date();
+        return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+    }
+
     function receiveRealtimeSms(sender, message) {
         const targetChat = conversationData.find(c => c.name === sender);
         if (targetChat) {
-            targetChat.history.push({ type: "received", text: message });
+            const timeNow = getLiveFormattedTime();
+
+            // Push Received SMS with Live Time
+            targetChat.history.push({ 
+                type: "received", 
+                text: message,
+                time: timeNow 
+            });
+
             targetChat.lastMsg = message;
-            targetChat.time = "Just now";
+            targetChat.time = timeNow;
+
+            // Mark Unread Counter if chat is not currently open
+            if (!activeChat || activeChat.name !== sender) {
+                targetChat.unread = (targetChat.unread || 0) + 1;
+            } else {
+                targetChat.unread = 0;
+            }
             
             renderChatList();
+            
             if (activeChat && activeChat.name === sender) {
                 openChat(activeChat);
             }
@@ -600,6 +661,11 @@
 
     function openChat(chat) {
         activeChat = chat;
+        
+        // Unread Badge Reset when message is read
+        chat.unread = 0;
+        renderChatList();
+
         document.getElementById('activeSender').textContent = chat.name;
         document.getElementById('activeAvatar').textContent = chat.name.charAt(0).toUpperCase();
         document.getElementById('activeAvatar').style.backgroundColor = chat.color;
@@ -616,7 +682,7 @@
             } else if (item.type === 'received') {
                 const msgDiv = document.createElement('div');
                 msgDiv.className = 'msg-bubble received';
-                msgDiv.textContent = item.text;
+                msgDiv.innerHTML = `${item.text} <span class="msg-time-sub">${item.time || ''}</span>`;
                 container.appendChild(msgDiv);
             } else if (item.type === 'sent') {
                 if (item.isSendingTag) {
@@ -627,7 +693,7 @@
                 } else {
                     const msgDiv = document.createElement('div');
                     msgDiv.className = 'msg-bubble sent';
-                    msgDiv.textContent = item.text;
+                    msgDiv.innerHTML = `${item.text} <span class="msg-time-sub">${item.time || ''}</span>`;
                     container.appendChild(msgDiv);
                 }
             }
@@ -651,7 +717,9 @@
     }
 
     function closeChat() {
+        activeChat = null;
         document.getElementById('chatScreen').classList.remove('active');
+        renderChatList();
     }
 
     function toggleSim() {
@@ -665,6 +733,7 @@
 
         if (text !== '' && activeChat) {
             const container = document.getElementById('messagesContainer');
+            const timeNow = getLiveFormattedTime();
 
             const tagDiv = document.createElement('div');
             tagDiv.className = 'sending-status';
@@ -673,13 +742,13 @@
 
             const msgDiv = document.createElement('div');
             msgDiv.className = 'msg-bubble sent';
-            msgDiv.textContent = text;
+            msgDiv.innerHTML = `${text} <span class="msg-time-sub">${timeNow}</span>`;
             container.appendChild(msgDiv);
 
             activeChat.history.push({ type: "sent", text: selectedSim, isSendingTag: true });
-            activeChat.history.push({ type: "sent", text: text });
+            activeChat.history.push({ type: "sent", text: text, time: timeNow });
             activeChat.lastMsg = text;
-            activeChat.time = "Just now";
+            activeChat.time = timeNow;
 
             input.value = '';
             container.scrollTop = container.scrollHeight;
