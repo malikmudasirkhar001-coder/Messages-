@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Messages Clone UI</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 412px;
+            height: 100vh;
+            background-color: #ffffff;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid #dadce0;
+        }
+
+        /* --- SPLASH SCREEN --- */
+        #splash-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            transition: opacity 0.4s ease, visibility 0.4s;
+        }
+
+        .splash-logo {
+            width: 80px;
+            height: 80px;
+            background: #1a73e8;
+            border-radius: 40px 40px 10px 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .splash-logo span {
+            color: white;
+            font-size: 45px;
+        }
+
+        /* --- MAIN LIST SCREEN --- */
+        .main-screen {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .header-search {
+            margin: 12px 16px;
+            padding: 8px 16px;
+            background-color: #f1f3f4;
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-search span.search-icon {
+            color: #5f6368;
+            font-size: 22px;
+        }
+
+        .header-title {
+            flex: 1;
+            font-size: 1.1rem;
+            color: #3c4043;
+            font-weight: 500;
+        }
+
+        .profile-avatar {
+            width: 32px;
+            height: 32px;
+            background-color: #1a73e8;
+            color: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            font-size: 15px;
+        }
+
+        .chat-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .chat-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            gap: 16px;
+            cursor: pointer;
+        }
+
+        .chat-item:active {
+            background-color: #f5f5f5;
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 500;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .chat-details {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .chat-top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2px;
+        }
+
+        .sender-name {
+            font-size: 0.98rem;
+            font-weight: 500;
+            color: #202124;
+        }
+
+        .chat-time {
+            font-size: 0.75rem;
+            color: #5f6368;
+        }
+
+        .chat-bottom-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .last-msg-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            overflow: hidden;
+        }
+
+        .last-message {
+            font-size: 0.88rem;
+            color: #5f6368;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .unread-badge {
+            background-color: #1e8e3e;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: bold;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .fab-btn {
+            position: absolute;
+            bottom: 24px;
+            right: 16px;
+            background-color: #c2e7ff;
+            color: #001d35;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            cursor: pointer;
+        }
+
+        /* --- CHAT SCREEN --- */
+        .chat-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            transform: translateX(100%);
+            transition: transform 0.25s ease-in-out;
+            z-index: 50;
+        }
+
+        .chat-screen.active {
+            transform: translateX(0);
+        }
+
+        .chat-header {
+            display: flex;
+            align-items: center;
+            padding: 10px 14px;
+            gap: 12px;
+            border-bottom: 1px solid #e8eaed;
+        }
+
+        .chat-header .back-btn {
+            cursor: pointer;
+            color: #3c4043;
+            font-size: 24px;
+        }
+
+        .chat-header .header-info {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+
+        .chat-header .header-info h4 {
+            font-size: 1.05rem;
+            color: #202124;
+            font-weight: 500;
+        }
+
+        .chat-header-actions {
+            display: flex;
+            gap: 16px;
+            color: #5f6368;
+        }
+
+        .chat-header-actions span {
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        .messages-container {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background-color: #ffffff;
+        }
+
+        .date-divider {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #70757a;
+            margin: 12px 0 6px 0;
+        }
+
+        .msg-bubble {
+            max-width: 82%;
+            padding: 10px 14px;
+            border-radius: 18px;
+            font-size: 0.92rem;
+            line-height: 1.45;
+            word-wrap: break-word;
+        }
+
+        .msg-bubble.received {
+            background-color: #f1f3f4;
+            color: #202124;
+            align-self: flex-start;
+            border-top-left-radius: 4px;
+        }
+
+        .msg-bubble.sent {
+            background-color: #e8f0fe;
+            color: #174ea6;
+            align-self: flex-end;
+            border-top-right-radius: 4px;
+        }
+
+        .sending-status {
+            align-self: flex-end;
+            font-size: 0.75rem;
+            color: #70757a;
+            margin-top: -4px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .sending-status .sim-tag {
+            color: #1a73e8;
+            text-decoration: underline;
+        }
+
+        .notice-banner {
+            background-color: #ffffff;
+            border-top: 1px solid #f1f3f4;
+            padding: 10px 16px;
+            font-size: 0.82rem;
+            color: #5f6368;
+            line-height: 1.4;
+        }
+
+        .input-bar {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            gap: 8px;
+            background-color: #ffffff;
+        }
+
+        .sim-picker {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            font-size: 0.82rem;
+            color: #1a73e8;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 12px;
+            background-color: #e8f0fe;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            background-color: #f1f3f4;
+            border-radius: 24px;
+            padding: 4px 14px;
+        }
+
+        .input-wrapper input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 8px 0;
+            outline: none;
+            font-size: 0.95rem;
+            color: #202124;
+        }
+
+        .input-actions {
+            display: flex;
+            gap: 8px;
+            color: #5f6368;
+        }
+
+        .input-actions span {
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .send-icon-btn {
+            color: #1a73e8;
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div id="splash-screen">
+        <div class="splash-logo">
+            <span class="material-icons-outlined">chat_bubble</span>
+        </div>
+    </div>
+
+    <div class="main-screen">
+        <div class="header-search">
+            <span class="material-icons-outlined search-icon">search</span>
+            <div class="header-title">Google Messages</div>
+            <div class="profile-avatar">G</div>
+        </div>
+
+        <div class="chat-list" id="chatList"></div>
+
+        <button class="fab-btn">
+            <span class="material-icons-outlined">chat_bubble</span>
+            Start chat
+        </button>
+    </div>
+
+    <div class="chat-screen" id="chatScreen">
+        <div class="chat-header">
+            <span class="material-icons-outlined back-btn" onclick="closeChat()">arrow_back</span>
+            <div class="header-info">
+                <div class="header-avatar" id="activeAvatar">8</div>
+                <h4 id="activeSender">8558</h4>
+            </div>
+            <div class="chat-header-actions">
+                <span class="material-icons-outlined">phone</span>
+                <span class="material-icons-outlined">search</span>
+                <span class="material-icons-outlined">more_vert</span>
+            </div>
+        </div>
+
+        <div class="messages-container" id="messagesContainer"></div>
+
+        <div class="notice-banner" id="noticeBanner" style="display:none;">
+            Sender can't accept replies. Contact them directly.
+        </div>
+
+        <div class="input-bar" id="inputBar">
+            <div class="sim-picker" id="simPicker" onclick="toggleSim()">
+                <span class="material-icons-outlined" style="font-size: 16px;">add</span>
+                <span id="simLabel">2 Jazz</span>
+            </div>
+            <div class="input-wrapper">
+                <input type="text" id="chatInput" placeholder="Text message" onkeypress="handleKeyPress(event)">
+                <div class="input-actions">
+                    <span class="material-icons-outlined">sentiment_satisfied</span>
+                    <span class="material-icons-outlined">attach_file</span>
+                </div>
+            </div>
+            <button class="send-icon-btn" onclick="sendMessage()">
+                <span class="material-icons-outlined">send</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Firebase Realtime Listener Scripts -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<script>
+    // Exact Config connecting to your Realtime Database
+    const firebaseConfig = {
+      databaseURL: "https://mysmsbridge-8f994-default-rtdb.firebaseio.com/"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    const conversationData = [
+        {
+            id: 101,
+            name: "8558",
+            lastMsg: "Rs 779.88 is your available balance on JazzCash Mobile A/C...",
+            time: "Mon",
+            unread: 0,
+            color: "#1a73e8",
+            canReply: true,
+            history: [
+                { type: "date", text: "Sunday • 1:58 PM" },
+                { type: "received", text: "Rs 150.00 sent to MUHAMMAD HAMZA NAZEER, A/C: ********5471 on 02/08/2026 at 13:58:10. Fee: Rs 0.00, TID:719420566836 via JazzCash" },
+                { type: "date", text: "Sunday • 3:29 PM" },
+                { type: "received", text: "Dear Customer, Rs 1 has been deducted from your account. It will be transferred to beneficiary account within 30 minutes. Please dial *786*1*6*1# to cancel this transaction." },
+                { type: "sent", text: "2 Jazz", isSendingTag: true },
+                { type: "received", text: "Dear Customer, Funds transfer of Rs 1 to AZIZ BIBI, 923084191378 cancelled successfully. Fee 0.00. TID 719428997080." },
+                { type: "sent", text: "1 Jazz", isSendingTag: true },
+                { type: "received", text: "Dear SHABANA BIBI, Amount of Rs 1.00 has been successfully sent to MUDDASIR ARBAS of IBAN No..." },
+                { type: "sent", text: "2 Jazz", isSendingTag: true },
+                { type: "date", text: "Thursday • 11:23 PM" },
+                { type: "received", text: "Rs 650.00 paid to HOT BITE PIZZA AND FAST FOOD, TID: 983843924 on 30/07/2026 at 23:23:20. Fee 0.00, TID: 719171203226 via QR Code." },
+                { type: "sent", text: "1 Jazz", isSendingTag: true },
+                { type: "date", text: "Friday • 7:28 AM" },
+                { type: "received", text: "Rs 22.79 is your available balance on JazzCash Mobile A/C: SHABANA BIBI Fee: 0.58, as of 31/07/2026 at 07:28:22 AM." },
+                { type: "sent", text: "2 Jazz", isSendingTag: true },
+                { type: "date", text: "Friday • 9:54 AM" },
+                { type: "received", text: "Mobile Bundle Mahana 6GB for Prepaid number 923084191378 of Rs 250.00 has been purchased on 31/07/2026. Fee: Rs 0.00, TID: 719194768..." },
+                { type: "date", text: "Monday • 7:23 PM" },
+                { type: "received", text: "Dear User, MPIN entered is not correct. If you do not remember the MPIN please dial *786*6*1*2# to reset your MPIN." },
+                { type: "sent", text: "2 Jazz", isSendingTag: true },
+                { type: "received", text: "Your transaction have failed, reason :CARD NOT ON FILE..TID:719550090103." },
+                { type: "received", text: "Your transaction have failed, reason :INVALID ACCOUNT..TID:719550180587." },
+                { type: "received", text: "Rs 780.46 is your available balance on JazzCash Mobile A/C: AZIZ BIBI Fee: 0.58, as of 03/08/2026 at 07:45:44 PM." },
+                { type: "sent", text: "1 Jazz", isSendingTag: true },
+                { type: "date", text: "Monday • 9:39 PM" },
+                { type: "received", text: "Rs 779.88 is your available balance on JazzCash Mobile A/C: AZIZ BIBI Fee: 0.58, as of 03/08/2026 at 09:39:14 PM." },
+                { type: "sent", text: "2 Jazz", isSendingTag: true }
+            ]
+        },
+        { id: 1, name: "JAZZ 5G", lastMsg: "500 MBs MUFT DATA! Ap ko 500MBs muft data mil gya hai", time: "4 min", unread: 4, color: "#1a73e8", canReply: false, history: [] },
+        { id: 2, name: "M Arslan U", lastMsg: "You: Call", time: "11 min", unread: 0, color: "#ea4335", canReply: true, history: [] },
+        { id: 3, name: "JazzCash", lastMsg: "Aap Reward Hub rewards ke liye eligible hain!", time: "28 min", unread: 2, color: "#9c27b0", canReply: false, history: [] },
+        { id: 4, name: "JAZZ OFFER", lastMsg: "ماہانہ 1200 جائز منٹس اور 1GB فیس بک...", time: "1:57 PM", unread: 2, color: "#9c27b0", canReply: false, history: [] },
+        { id: 5, name: "6085", lastMsg: "Muaziz Sarif! Ap My Status Service istamal kar rahay hain...", time: "1:20 PM", unread: 3, color: "#34a853", canReply: true, history: [] }
+    ];
+
+    let activeChat = null;
+    let selectedSim = "2 Jazz";
+
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            const splash = document.getElementById('splash-screen');
+            splash.style.opacity = '0';
+            setTimeout(() => splash.style.display = 'none', 400);
+        }, 1000);
+
+        renderChatList();
+        
+        // Dynamic Live Event Listener from Firebase
+        database.ref('sms_messages').limitToLast(1).on('child_added', (snapshot) => {
+            const data = snapshot.val();
+            if (data && data.sender === "8558") {
+                receiveRealtimeSms(data.sender, data.msg);
+            }
+        });
+    });
+
+    function receiveRealtimeSms(sender, message) {
+        const targetChat = conversationData.find(c => c.name === sender);
+        if (targetChat) {
+            targetChat.history.push({ type: "received", text: message });
+            targetChat.lastMsg = message;
+            targetChat.time = "Just now";
+            
+            renderChatList();
+            if (activeChat && activeChat.name === sender) {
+                openChat(activeChat);
+            }
+        }
+    }
+
+    function renderChatList() {
+        const listContainer = document.getElementById('chatList');
+        listContainer.innerHTML = '';
+
+        conversationData.forEach(chat => {
+            const initial = chat.name.charAt(0).toUpperCase();
+            const unreadHTML = chat.unread > 0 ? `<div class="unread-badge">${chat.unread}</div>` : '';
+
+            const item = document.createElement('div');
+            item.className = 'chat-item';
+            item.onclick = () => openChat(chat);
+
+            item.innerHTML = `
+                <div class="avatar" style="background-color: ${chat.color}">${initial}</div>
+                <div class="chat-details">
+                    <div class="chat-top-row">
+                        <span class="sender-name">${chat.name}</span>
+                        <span class="chat-time">${chat.time}</span>
+                    </div>
+                    <div class="chat-bottom-row">
+                        <div class="last-msg-container">
+                            <span class="last-message">${chat.lastMsg}</span>
+                        </div>
+                        ${unreadHTML}
+                    </div>
+                </div>
+            `;
+            listContainer.appendChild(item);
+        });
+    }
+
+    function openChat(chat) {
+        activeChat = chat;
+        document.getElementById('activeSender').textContent = chat.name;
+        document.getElementById('activeAvatar').textContent = chat.name.charAt(0).toUpperCase();
+        document.getElementById('activeAvatar').style.backgroundColor = chat.color;
+
+        const container = document.getElementById('messagesContainer');
+        container.innerHTML = '';
+
+        chat.history.forEach(item => {
+            if (item.type === 'date') {
+                const dateDiv = document.createElement('div');
+                dateDiv.className = 'date-divider';
+                dateDiv.textContent = item.text;
+                container.appendChild(dateDiv);
+            } else if (item.type === 'received') {
+                const msgDiv = document.createElement('div');
+                msgDiv.className = 'msg-bubble received';
+                msgDiv.textContent = item.text;
+                container.appendChild(msgDiv);
+            } else if (item.type === 'sent') {
+                if (item.isSendingTag) {
+                    const tagDiv = document.createElement('div');
+                    tagDiv.className = 'sending-status';
+                    tagDiv.innerHTML = `Sending with <span class="sim-tag">${item.text}</span>`;
+                    container.appendChild(tagDiv);
+                } else {
+                    const msgDiv = document.createElement('div');
+                    msgDiv.className = 'msg-bubble sent';
+                    msgDiv.textContent = item.text;
+                    container.appendChild(msgDiv);
+                }
+            }
+        });
+
+        const noticeBanner = document.getElementById('noticeBanner');
+        const inputBar = document.getElementById('inputBar');
+
+        if (chat.canReply) {
+            noticeBanner.style.display = 'none';
+            inputBar.style.display = 'flex';
+        } else {
+            noticeBanner.style.display = 'block';
+            inputBar.style.display = 'none';
+        }
+
+        document.getElementById('chatScreen').classList.add('active');
+        setTimeout(() => {
+            container.scrollTop = container.scrollHeight;
+        }, 50);
+    }
+
+    function closeChat() {
+        document.getElementById('chatScreen').classList.remove('active');
+    }
+
+    function toggleSim() {
+        selectedSim = (selectedSim === "2 Jazz") ? "1 Jazz" : "2 Jazz";
+        document.getElementById('simLabel').textContent = selectedSim;
+    }
+
+    function sendMessage() {
+        const input = document.getElementById('chatInput');
+        const text = input.value.trim();
+
+        if (text !== '' && activeChat) {
+            const container = document.getElementById('messagesContainer');
+
+            const tagDiv = document.createElement('div');
+            tagDiv.className = 'sending-status';
+            tagDiv.innerHTML = `Sending with <span class="sim-tag">${selectedSim}</span>`;
+            container.appendChild(tagDiv);
+
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'msg-bubble sent';
+            msgDiv.textContent = text;
+            container.appendChild(msgDiv);
+
+            activeChat.history.push({ type: "sent", text: selectedSim, isSendingTag: true });
+            activeChat.history.push({ type: "sent", text: text });
+            activeChat.lastMsg = text;
+            activeChat.time = "Just now";
+
+            input.value = '';
+            container.scrollTop = container.scrollHeight;
+            renderChatList();
+        }
+    }
+
+    function handleKeyPress(e) {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    }
+</script>
+
+</body>
+</html>
