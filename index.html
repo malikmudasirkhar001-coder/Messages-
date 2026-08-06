@@ -78,9 +78,9 @@
             width: 100%;
         }
 
-        /* Header Fix: Profile Avatar thora neeche aur aligned */
+        /* Header Fix: Profile Avatar thoda aur neeche aligned */
         .header-search {
-            margin: 14px 14px 10px 14px;
+            margin: 18px 14px 10px 14px;
             padding: 6px 14px;
             background-color: #f1f3f4;
             border-radius: 28px;
@@ -88,7 +88,7 @@
             align-items: center;
             gap: 12px;
             flex-shrink: 0;
-            height: 48px;
+            height: 50px;
         }
 
         .header-search span.search-icon {
@@ -106,10 +106,9 @@
             text-overflow: ellipsis;
         }
 
-        /* Account Icon Shifted slightly down via Margin adjustments */
         .profile-avatar {
-            width: 32px;
-            height: 32px;
+            width: 34px;
+            height: 34px;
             background-color: #1a73e8;
             color: #ffffff;
             border-radius: 50%;
@@ -119,7 +118,7 @@
             font-weight: 500;
             font-size: 15px;
             flex-shrink: 0;
-            margin-top: 1px;
+            margin-top: 2px;
             cursor: pointer;
         }
 
@@ -470,7 +469,7 @@
 
         <div class="chat-list" id="chatList"></div>
 
-        <button class="fab-btn">
+        <button class="fab-btn" onclick="startNewChat()">
             <span class="material-icons-outlined">chat_bubble</span>
             Start chat
         </button>
@@ -583,17 +582,16 @@
     let activeChat = null;
     let selectedSim = "2 Jazz";
 
-    // Play Sound & Vibration on SMS Notification
+    // Play Ringtone & Vibration on SMS
     function triggerNotificationEffect() {
-        // Mobile Vibration API
         if ("vibrate" in navigator) {
-            navigator.vibrate([200, 100, 200]);
+            navigator.vibrate([300, 150, 300]); // Strong Vibration Pattern
         }
         
-        // Notification Sound
         try {
+            // Google Message Default Ringtone Sound
             const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
-            audio.play().catch(e => console.log("Audio play blocked by browser"));
+            audio.play().catch(e => console.log("Sound autoplay browser error"));
         } catch(e) {}
     }
 
@@ -606,10 +604,10 @@
 
         renderChatList();
         
-        // Firebase Realtime Listener
-        database.ref('sms_messages').limitToLast(1).on('child_added', (snapshot) => {
+        // Firebase Live Listener (Koi bhi message miss na ho)
+        database.ref('sms_messages').on('child_added', (snapshot) => {
             const data = snapshot.val();
-            if (data && data.sender === "8558") {
+            if (data && data.sender && data.msg) {
                 receiveRealtimeSms(data.sender, data.msg);
             }
         });
@@ -621,38 +619,75 @@
     }
 
     function receiveRealtimeSms(sender, message) {
-        const targetChat = conversationData.find(c => c.name === sender);
-        if (targetChat) {
-            const timeNow = getLiveFormattedTime();
+        let targetChat = conversationData.find(c => c.name === sender);
+        
+        // Agar naya sender hai to auto chat create karein
+        if (!targetChat) {
+            targetChat = {
+                id: Date.now(),
+                name: sender,
+                lastMsg: message,
+                time: getLiveFormattedTime(),
+                unread: 1,
+                color: "#1a73e8",
+                canReply: true,
+                history: []
+            };
+            conversationData.unshift(targetChat);
+        }
 
-            // Prevent duplicate insertion if already saved
-            const isDuplicate = targetChat.history.some(m => m.text === message && m.time === timeNow);
-            if(!isDuplicate) {
-                targetChat.history.push({ 
-                    type: "received", 
-                    text: message,
-                    time: timeNow 
-                });
+        const timeNow = getLiveFormattedTime();
 
-                targetChat.lastMsg = message;
-                targetChat.time = timeNow;
+        // Duplicate messages ignore karein
+        const isDuplicate = targetChat.history.some(m => m.text === message && m.time === timeNow);
+        if(!isDuplicate) {
+            targetChat.history.push({ 
+                type: "received", 
+                text: message,
+                time: timeNow 
+            });
 
-                if (!activeChat || activeChat.name !== sender) {
-                    targetChat.unread = (targetChat.unread || 0) + 1;
-                } else {
-                    targetChat.unread = 0;
-                }
-                
-                // Trigger Vibration & Sound
-                triggerNotificationEffect();
-                
-                saveToLocalStorage();
-                renderChatList();
-                
-                if (activeChat && activeChat.name === sender) {
-                    openChat(activeChat);
-                }
+            targetChat.lastMsg = message;
+            targetChat.time = timeNow;
+
+            if (!activeChat || activeChat.name !== sender) {
+                targetChat.unread = (targetChat.unread || 0) + 1;
+            } else {
+                targetChat.unread = 0;
             }
+            
+            triggerNotificationEffect();
+            saveToLocalStorage();
+            renderChatList();
+            
+            if (activeChat && activeChat.name === sender) {
+                openChat(activeChat);
+            }
+        }
+    }
+
+    // Start New Chat Feature
+    function startNewChat() {
+        const number = prompt("Enter Mobile Number to send message:");
+        if (number && number.trim() !== "") {
+            const cleanNum = number.trim();
+            let targetChat = conversationData.find(c => c.name === cleanNum);
+            
+            if (!targetChat) {
+                targetChat = {
+                    id: Date.now(),
+                    name: cleanNum,
+                    lastMsg: "New Conversation",
+                    time: getLiveFormattedTime(),
+                    unread: 0,
+                    color: "#34a853",
+                    canReply: true,
+                    history: []
+                };
+                conversationData.unshift(targetChat);
+                saveToLocalStorage();
+            }
+            openChat(targetChat);
         }
     }
 
