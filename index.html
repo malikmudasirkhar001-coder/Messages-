@@ -61,9 +61,32 @@
             z-index: 1;
         }
 
+        /* NOTIFICATION PERMISSION BANNER */
+        .notif-permission-banner {
+            background-color: #001D35;
+            color: white;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 13px;
+            z-index: 100;
+        }
+
+        .notif-btn {
+            background-color: #C2E7FF;
+            color: #001D35;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
         /* Front Screen Header */
         .search-bar-container {
-            padding: 32px 12px 6px 12px;
+            padding: 16px 12px 6px 12px;
             position: sticky;
             top: 0;
             background-color: #F1F4F9;
@@ -220,7 +243,7 @@
             display: flex;
         }
 
-        /* FIXED HEADER */
+        /* STRICTLY LOCKED HEADER */
         .chat-header {
             flex-shrink: 0;
             height: 65px;
@@ -238,7 +261,7 @@
         .chat-header.selection-mode { background-color: #D3E3FD; }
         .chat-title { flex: 1; font-size: 17px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* SCROLLABLE CHAT BODY */
+        /* SCROLLABLE CHAT BODY WITH DYNAMIC PADDING */
         .chat-body {
             flex: 1;
             padding: 12px 16px;
@@ -249,6 +272,7 @@
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             scroll-behavior: smooth;
+            transition: padding-bottom 0.25s ease;
         }
 
         .date-divider {
@@ -278,7 +302,7 @@
         .sent { background-color: #C2E7FF; color: #001D35; border-bottom-right-radius: 4px; align-self: flex-end; }
         .timestamp { font-size: 10px; color: #747775; margin-top: 4px; text-align: right; }
 
-        /* CHAT FOOTER */
+        /* CHAT FOOTER (HIGH LIFT / UP SHIFT FOR KEYBOARD) */
         .chat-footer {
             flex-shrink: 0;
             padding: 10px 12px;
@@ -290,11 +314,12 @@
             z-index: 50;
             position: sticky;
             bottom: 0;
-            transition: margin-bottom 0.25s ease;
+            transition: transform 0.25s ease;
         }
 
+        /* LIFT FOOTER HIGH UP WHEN KEYBOARD IS ACTIVE */
         .chat-footer.keyboard-up {
-            margin-bottom: 300px;
+            transform: translateY(-280px);
         }
 
         .chat-input-box {
@@ -358,6 +383,13 @@
 <body>
 
     <div class="app-container" id="appMainContainer">
+        
+        <!-- SYSTEM NOTIFICATION ALLOW BANNER -->
+        <div id="notifBanner" class="notif-permission-banner">
+            <span>Enable System Notifications for new SMS</span>
+            <button class="notif-btn" onclick="requestNotificationAccess()">ALLOW</button>
+        </div>
+
         <!-- 1. MESSAGES LIST SCREEN -->
         <div id="list-screen" class="screen active">
             <div class="search-bar-container">
@@ -464,25 +496,49 @@
 
         let selectedSimSlot = 1;
 
-        // SYSTEM NOTIFICATION PERMISSION FOR APPGEYSER & ANDROID APK
-        document.addEventListener('DOMContentLoaded', () => {
+        // NOTIFICATION PERMISSION REQUEST HANDLER
+        function requestNotificationAccess() {
             if ("Notification" in window) {
-                if (Notification.permission !== "granted" && Notification.permission !== "denied") {
-                    Notification.requestPermission();
-                }
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        document.getElementById('notifBanner').style.display = 'none';
+                        showSystemBannerNotification("System", "Notifications Enabled Successfully!");
+                    } else {
+                        alert("Please allow notifications in phone settings for real-time alerts.");
+                    }
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if ("Notification" in window && Notification.permission === "granted") {
+                document.getElementById('notifBanner').style.display = 'none';
             }
         });
 
+        // HIGH INPUT BOX LIFTING (5 INCHES LIFT) FOR KEYBOARD
         function raiseInputBox() {
             const footer = document.getElementById('chatFooter');
+            const chatBody = document.getElementById('chat-conversation-body');
+            
             footer.classList.add('keyboard-up');
-            setTimeout(() => { scrollChatToBottom(); }, 150);
+            chatBody.style.paddingBottom = "290px";
+            
+            setTimeout(() => {
+                scrollChatToBottom();
+            }, 150);
         }
 
         function resetInputBox() {
             const footer = document.getElementById('chatFooter');
+            const chatBody = document.getElementById('chat-conversation-body');
+            
             footer.classList.remove('keyboard-up');
-            setTimeout(() => { scrollChatToBottom(); }, 150);
+            chatBody.style.paddingBottom = "12px";
+            
+            setTimeout(() => {
+                scrollChatToBottom();
+            }, 150);
         }
 
         function scrollChatToBottom() {
@@ -1060,7 +1116,6 @@
             }
         }
 
-        // UPDATED APPGEYSER & SYSTEM NOTIFICATION FUNCTION
         function showSystemBannerNotification(sender, text) {
             const title = `New Message from ${sender}`;
             const options = {
@@ -1070,18 +1125,10 @@
                 requireInteraction: true
             };
 
-            if ("Notification" in window) {
-                if (Notification.permission === "granted") {
-                    try {
-                        new Notification(title, options);
-                    } catch (e) {}
-                } else if (Notification.permission !== "denied") {
-                    Notification.requestPermission().then(permission => {
-                        if (permission === "granted") {
-                            new Notification(title, options);
-                        }
-                    });
-                }
+            if ("Notification" in window && Notification.permission === "granted") {
+                try {
+                    new Notification(title, options);
+                } catch(e) {}
             }
         }
 
