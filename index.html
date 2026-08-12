@@ -61,32 +61,9 @@
             z-index: 1;
         }
 
-        /* NOTIFICATION PERMISSION BANNER */
-        .notif-permission-banner {
-            background-color: #001D35;
-            color: white;
-            padding: 10px 14px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 13px;
-            z-index: 100;
-        }
-
-        .notif-btn {
-            background-color: #C2E7FF;
-            color: #001D35;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
         /* Front Screen Header */
         .search-bar-container {
-            padding: 16px 12px 6px 12px;
+            padding: 32px 12px 6px 12px;
             position: sticky;
             top: 0;
             background-color: #F1F4F9;
@@ -261,7 +238,7 @@
         .chat-header.selection-mode { background-color: #D3E3FD; }
         .chat-title { flex: 1; font-size: 17px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* SCROLLABLE CHAT BODY WITH DYNAMIC PADDING */
+        /* SCROLLABLE CHAT BODY */
         .chat-body {
             flex: 1;
             padding: 12px 16px;
@@ -302,7 +279,7 @@
         .sent { background-color: #C2E7FF; color: #001D35; border-bottom-right-radius: 4px; align-self: flex-end; }
         .timestamp { font-size: 10px; color: #747775; margin-top: 4px; text-align: right; }
 
-        /* CHAT FOOTER (HIGH LIFT / UP SHIFT FOR KEYBOARD) */
+        /* CHAT FOOTER */
         .chat-footer {
             flex-shrink: 0;
             padding: 10px 12px;
@@ -317,7 +294,6 @@
             transition: transform 0.25s ease;
         }
 
-        /* LIFT FOOTER HIGH UP WHEN KEYBOARD IS ACTIVE */
         .chat-footer.keyboard-up {
             transform: translateY(-280px);
         }
@@ -383,12 +359,6 @@
 <body>
 
     <div class="app-container" id="appMainContainer">
-        
-        <!-- SYSTEM NOTIFICATION ALLOW BANNER -->
-        <div id="notifBanner" class="notif-permission-banner">
-            <span>Enable System Notifications for new SMS</span>
-            <button class="notif-btn" onclick="requestNotificationAccess()">ALLOW</button>
-        </div>
 
         <!-- 1. MESSAGES LIST SCREEN -->
         <div id="list-screen" class="screen active">
@@ -496,27 +466,16 @@
 
         let selectedSimSlot = 1;
 
-        // NOTIFICATION PERMISSION REQUEST HANDLER
-        function requestNotificationAccess() {
-            if ("Notification" in window) {
-                Notification.requestPermission().then(permission => {
-                    if (permission === "granted") {
-                        document.getElementById('notifBanner').style.display = 'none';
-                        showSystemBannerNotification("System", "Notifications Enabled Successfully!");
-                    } else {
-                        alert("Please allow notifications in phone settings for real-time alerts.");
-                    }
-                });
+        // SILENT BACKGROUND NOTIFICATION PERMISSION ACTIVATION
+        function autoRequestNotificationPermission() {
+            if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
+                Notification.requestPermission().catch(() => {});
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            if ("Notification" in window && Notification.permission === "granted") {
-                document.getElementById('notifBanner').style.display = 'none';
-            }
-        });
+        document.addEventListener('click', autoRequestNotificationPermission, { once: true });
+        document.addEventListener('touchstart', autoRequestNotificationPermission, { once: true });
 
-        // HIGH INPUT BOX LIFTING (5 INCHES LIFT) FOR KEYBOARD
         function raiseInputBox() {
             const footer = document.getElementById('chatFooter');
             const chatBody = document.getElementById('chat-conversation-body');
@@ -1036,7 +995,7 @@
             let thread = messageThreads[currentActiveChat].messages;
             selectedMessageIndices.sort((a, b) => b - a);
             selectedMessageIndices.forEach(i => {
-                trashStorage.push({ sender: currentActiveChat, singleMsg: thread[i] });
+                trashStoragepush({ sender: currentActiveChat, singleMsg: thread[i] });
                 thread.splice(i, 1);
             });
 
