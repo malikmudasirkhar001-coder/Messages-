@@ -1,2210 +1,547 @@
 <!DOCTYPE html>
-<html lang="ur">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#2cc673">
-  <title>Official Dual SIM JazzCash Dialer App</title>
-  
-  <!-- Inline PWA Manifest for Offline Support -->
-  <link rel="manifest" href='data:application/manifest+json,{"name":"JazzCash Dialer","short_name":"Dialer","start_url":".","display":"standalone","background_color":"#ffffff","theme_color":"#2cc673"}' />
-
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-    }
-
-    html, body {
-      width: 100vw;
-      height: 100vh;
-      background-color: #ffffff;
-      overflow: hidden;
-      position: fixed;
-    }
-
-    .phone-screen {
-      width: 100vw;
-      height: 100vh;
-      background: #ffffff;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .view-screen {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      width: 100%;
-      background: #ffffff;
-    }
-
-    .top-content-area {
-      flex: 1;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      background: #ffffff;
-    }
-
-    .top-bar-header {
-      padding: 12px 20px 5px;
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .search-input-container {
-      display: none;
-      width: 100%;
-      padding: 0 5px;
-    }
-
-    .search-input-container input {
-      width: 100%;
-      padding: 8px 14px;
-      border-radius: 20px;
-      border: 1px solid #ddd;
-      outline: none;
-      font-size: 14px;
-      background: #f9f9f9;
-      user-select: text;
-    }
-
-    .top-icon {
-      width: 22px;
-      height: 22px;
-      stroke: #333;
-      fill: none;
-      stroke-width: 2;
-      cursor: pointer;
-    }
-
-    .title-section {
-      padding: 0 20px;
-    }
-
-    .app-title {
-      font-size: 32px;
-      font-weight: 500;
-      color: #111;
-      margin-bottom: 10px;
-    }
-
-    .tabs {
-      display: flex;
-      border-bottom: 1px solid #f0f0f0;
-    }
-
-    .tab {
-      flex: 1;
-      text-align: center;
-      font-size: 16px;
-      color: #666;
-      padding-bottom: 8px;
-      position: relative;
-      cursor: pointer;
-    }
-
-    .tab.active {
-      color: #111;
-      font-weight: 500;
-    }
-
-    .tab.active::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 40%;
-      width: 20%;
-      height: 3px;
-      background-color: #2cc673;
-      border-radius: 2px;
-    }
-
-    .recents-list, .contacts-list {
-      padding: 5px 0;
-      background: #ffffff;
-    }
-
-    .recent-item, .contact-item {
-      display: flex;
-      align-items: center;
-      padding: 12px 20px;
-      justify-content: space-between;
-      cursor: pointer;
-    }
-
-    .recent-item:active, .contact-item:active {
-      background-color: #f5f5f5;
-    }
-
-    .recent-left, .contact-left {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .call-arrow {
-      width: 16px;
-      height: 16px;
-      stroke: #888;
-      stroke-width: 2;
-    }
-
-    .contact-avatar {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      background: #2cc673;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      font-size: 16px;
-    }
-
-    .contact-info .name {
-      font-size: 16px;
-      font-weight: 500;
-      color: #111;
-    }
-
-    .contact-info .badge-type, .contact-info .phone-num {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      margin-top: 2px;
-      color: #777;
-      font-size: 12px;
-    }
-
-    .sim-badge {
-      border: 1px solid #aaa;
-      border-radius: 3px;
-      font-size: 10px;
-      padding: 0 3px;
-      font-weight: bold;
-    }
-
-    .recent-right {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .time-stamp {
-      font-size: 12px;
-      color: #888;
-    }
-
-    .info-icon {
-      width: 22px;
-      height: 22px;
-      border: 1.5px solid #666;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      font-weight: bold;
-      color: #333;
-    }
-
-    .typing-options {
-      display: none;
-      flex-direction: column;
-      padding: 10px 20px;
-      gap: 16px;
-      background: #ffffff;
-    }
-
-    .type-opt-row {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      font-size: 16px;
-      color: #111;
-      cursor: pointer;
-    }
-
-    .type-opt-icon {
-      width: 22px;
-      height: 22px;
-      stroke: #333;
-      fill: none;
-      stroke-width: 2;
-    }
-
-    .number-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 5px 15px;
-      min-height: 48px;
-      background: #ffffff;
-    }
-
-    .dots-menu-btn {
-      font-size: 22px;
-      color: #333;
-      visibility: hidden;
-    }
-
-    .number-display-input {
-      font-size: 26px;
-      font-weight: 500;
-      color: #111;
-      letter-spacing: 1px;
-      text-align: center;
-      border: none;
-      outline: none;
-      width: 100%;
-      background: transparent;
-      direction: ltr;
-    }
-
-    .backspace-btn {
-      width: 30px;
-      height: 24px;
-      background: #333;
-      color: #fff;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-      position: relative;
-    }
-
-    .backspace-btn::before {
-      content: '';
-      position: absolute;
-      left: -8px;
-      top: 0;
-      border-top: 12px solid transparent;
-      border-bottom: 12px solid transparent;
-      border-right: 8px solid #333;
-    }
-
-    .keypad-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      padding: 0 20px;
-      row-gap: 4px;
-      background: #ffffff;
-    }
-
-    .key-btn {
-      background: none;
-      border: none;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 50px;
-      cursor: pointer;
-      border-radius: 12px;
-    }
-
-    .key-btn:active {
-      background-color: #f5f5f5;
-    }
-
-    .key-num {
-      font-size: 24px;
-      color: #111;
-      font-weight: 400;
-      line-height: 1;
-    }
-
-    .key-sub {
-      font-size: 9px;
-      color: #888;
-      margin-top: 2px;
-      letter-spacing: 1.5px;
-    }
-
-    .action-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 20px;
-      background: #ffffff;
-    }
-
-    .action-circle-btn {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      border: none;
-      background: transparent;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-    }
-
-    .action-circle-btn svg {
-      width: 22px;
-      height: 22px;
-      fill: none;
-      stroke: #333;
-      stroke-width: 2;
-    }
-
-    .whatsapp-btn {
-      background-color: #25d366;
-    }
-
-    .whatsapp-btn svg {
-      fill: white;
-      stroke: none;
-      width: 24px;
-      height: 24px;
-    }
-
-    .call-capsule-btn {
-      background-color: #2cc673;
-      height: 48px;
-      border-radius: 24px;
-      display: flex;
-      align-items: center;
-      width: 140px;
-      overflow: hidden;
-    }
-
-    .sim-segment {
-      flex: 1;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 3px;
-      cursor: pointer;
-      border: none;
-      background: transparent;
-    }
-
-    .sim-segment:first-child {
-      border-right: 1px solid rgba(255, 255, 255, 0.25);
-    }
-
-    .sim-segment svg {
-      width: 18px;
-      height: 18px;
-      fill: white;
-    }
-
-    .sim-num {
-      color: white;
-      font-size: 11px;
-      font-weight: 600;
-      margin-top: 5px;
-    }
-
-    .bottom-navbar {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      padding: 8px 0 12px;
-      border-top: 1px solid #f0f0f0;
-      background: #ffffff;
-    }
-
-    .nav-tab {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      color: #888;
-      font-size: 11px;
-      cursor: pointer;
-    }
-
-    .nav-tab.active {
-      color: #2cc673;
-    }
-
-    .nav-tab svg {
-      width: 20px;
-      height: 20px;
-      fill: currentColor;
-    }
-
-    .admin-modal-overlay {
-      display: none;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      justify-content: center;
-      align-items: center;
-      z-index: 950;
-    }
-
-    .admin-card {
-      background: #ffffff;
-      width: 92%;
-      max-height: 90%;
-      border-radius: 20px;
-      padding: 20px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-      overflow-y: auto;
-    }
-
-    .admin-title {
-      font-size: 18px;
-      font-weight: bold;
-      color: #2cc673;
-      margin-bottom: 12px;
-      text-align: center;
-    }
-
-    .admin-section-title {
-      font-size: 14px;
-      font-weight: 600;
-      margin: 10px 0 6px;
-      color: #333;
-      border-bottom: 1px solid #eee;
-      padding-bottom: 4px;
-    }
-
-    .admin-field {
-      margin-bottom: 8px;
-    }
-
-    .admin-field label {
-      font-size: 11px;
-      color: #555;
-      display: block;
-      margin-bottom: 2px;
-    }
-
-    .admin-field input, .admin-field textarea, .admin-field select {
-      width: 100%;
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 13px;
-      outline: none;
-      user-select: text;
-    }
-
-    .admin-add-btn {
-      width: 100%;
-      background: #2cc673;
-      color: white;
-      border: none;
-      padding: 8px;
-      font-size: 13px;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-bottom: 10px;
-    }
-
-    .db-list {
-      max-height: 110px;
-      overflow-y: auto;
-      background: #f9f9f9;
-      border: 1px solid #eee;
-      border-radius: 6px;
-      padding: 6px;
-      margin-bottom: 10px;
-    }
-
-    .db-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 12px;
-      padding: 4px 0;
-      border-bottom: 1px dashed #ddd;
-    }
-
-    .del-btn {
-      color: red;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .admin-close-btn {
-      width: 100%;
-      background: #333;
-      color: white;
-      border: none;
-      padding: 10px;
-      font-size: 14px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    .fake-call-screen {
-      display: none;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: #111419;
-      color: white;
-      flex-direction: column;
-      justify-content: space-between;
-      align-items: center;
-      padding: 60px 20px 50px;
-      z-index: 900;
-    }
-
-    .call-contact-name {
-      font-size: 28px;
-      font-weight: 500;
-      margin-bottom: 8px;
-      text-align: center;
-    }
-
-    .call-status-timer {
-      font-size: 15px;
-      color: #2cc673;
-      letter-spacing: 1px;
-      text-align: center;
-    }
-
-    .call-grid-options {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 30px;
-      width: 100%;
-      padding: 0 20px;
-      margin-bottom: 40px;
-    }
-
-    .call-opt-btn {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      font-size: 12px;
-      color: #ccc;
-    }
-
-    .call-opt-circle {
-      width: 54px;
-      height: 54px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-    }
-
-    .end-call-btn {
-      width: 68px;
-      height: 68px;
-      border-radius: 50%;
-      background: #ff3b30;
-      border: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 4px 15px rgba(255, 59, 48, 0.4);
-    }
-
-    .end-call-btn svg {
-      width: 32px;
-      height: 32px;
-      fill: white;
-      transform: rotate(135deg);
-    }
-
-    .sim-chooser-overlay {
-      display: none;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.45);
-      justify-content: center;
-      align-items: flex-end;
-      z-index: 800;
-    }
-
-    .sim-chooser-card {
-      background: #ffffff;
-      width: 92%;
-      border-radius: 24px;
-      padding: 22px 20px 18px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-      margin-bottom: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .sim-chooser-title {
-      font-size: 18px;
-      font-weight: 600;
-      color: #111;
-      margin-bottom: 4px;
-    }
-
-    .sim-option-item {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 10px 0;
-      cursor: pointer;
-      border-bottom: 1px solid #f2f2f2;
-    }
-
-    .sim-option-item:last-of-type {
-      border-bottom: none;
-    }
-
-    .sim-option-icon {
-      width: 24px;
-      height: 32px;
-      border: 1.5px solid #555;
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      font-weight: bold;
-      color: #333;
-    }
-
-    .sim-option-details .sim-name {
-      font-size: 16px;
-      font-weight: 500;
-      color: #111;
-    }
-
-    .sim-option-details .sim-num-text {
-      font-size: 13px;
-      color: #666;
-      margin-top: 2px;
-    }
-
-    .sim-cancel-btn {
-      background: none;
-      border: none;
-      font-size: 16px;
-      font-weight: 500;
-      color: #333;
-      text-align: center;
-      padding: 10px 0 2px;
-      cursor: pointer;
-    }
-
-    .ussd-running-overlay, .msg-prompt-overlay, .mmi-error-overlay {
-      display: none;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.45);
-      justify-content: center;
-      align-items: center;
-      padding: 10px;
-      z-index: 850;
-      overflow: hidden;
-    }
-
-    .ussd-running-overlay {
-      align-items: flex-end !important;
-      padding-bottom: 25px !important;
-    }
-
-    .ussd-dialog-overlay {
-      display: none;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.45);
-      justify-content: center;
-      align-items: flex-end;
-      padding: 10px 10px 42vh;
-      z-index: 850;
-      overflow: hidden;
-      transition: all 0.2s ease;
-    }
-
-    .ussd-running-card {
-      background: #ffffff;
-      width: 95%;
-      border-radius: 24px;
-      padding: 24px 22px;
-      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
-      display: flex;
-      align-items: center;
-      gap: 18px;
-    }
-
-    .running-dots-pill {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: #e2e8f0;
-      padding: 8px 14px;
-      border-radius: 16px;
-    }
-
-    .running-dot {
-      width: 8px;
-      height: 8px;
-      background-color: #64748b;
-      border-radius: 50%;
-      animation: runningPulse 1s infinite ease-in-out;
-    }
-
-    .running-dot:nth-child(2) {
-      animation-delay: 0.2s;
-    }
-
-    @keyframes runningPulse {
-      0%, 100% { opacity: 0.2; transform: scale(0.8); }
-      50% { opacity: 1; transform: scale(1.2); background-color: #334155; }
-    }
-
-    .ussd-running-text-style {
-      font-size: 17px;
-      color: #1e293b;
-      font-weight: 500;
-    }
-
-    .ussd-dialog-card, .msg-prompt-card {
-      background: #ffffff;
-      width: 95%;
-      max-height: 70vh;
-      overflow-y: auto;
-      border-radius: 24px;
-      padding: 20px 18px 16px;
-      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
-      margin-bottom: 10px;
-    }
-
-    .ussd-dialog-text, .msg-prompt-text {
-      font-size: 15px;
-      color: #222;
-      line-height: 1.45;
-      white-space: pre-line;
-      margin-bottom: 14px;
-    }
-
-    .ussd-dialog-input-wrap {
-      border-bottom: 2px solid #2cc673;
-      margin-bottom: 16px;
-    }
-
-    .ussd-dialog-input {
-      width: 100%;
-      border: none;
-      outline: none;
-      font-size: 18px;
-      font-weight: normal;
-      background: transparent;
-      color: #111;
-      height: 36px;
-      user-select: text;
-    }
-
-    .ussd-dialog-actions, .msg-prompt-actions {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      padding-top: 4px;
-    }
-
-    .ussd-btn-cancel {
-      background: none;
-      border: none;
-      font-size: 16px;
-      font-weight: 500;
-      color: #2cc673;
-      cursor: pointer;
-      flex: 1;
-      text-align: center;
-    }
-
-    .ussd-btn-send, .msg-prompt-ok-btn {
-      background: none;
-      border: none;
-      font-size: 16px;
-      font-weight: 600;
-      color: #2cc673;
-      cursor: pointer;
-      flex: 1;
-      text-align: center;
-    }
-
-    .mmi-error-card {
-      background: #ffffff;
-      width: 90%;
-      border-radius: 28px;
-      padding: 24px 22px 18px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-      margin: auto;
-    }
-
-    .mmi-error-title {
-      font-size: 20px;
-      font-weight: 600;
-      color: #111;
-      margin-bottom: 14px;
-    }
-
-    .mmi-error-text {
-      font-size: 15px;
-      color: #444;
-      line-height: 1.4;
-      margin-bottom: 24px;
-    }
-
-    .mmi-error-ok-btn {
-      text-align: center;
-      color: #2cc673;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      padding: 6px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Messages App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    
+    <!-- Firebase Libraries (Same as your Dialer App) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #F1F4F9;
+            color: #1F1F1F;
+            display: flex;
+            justify-content: center;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 412px;
+            background-color: #F1F4F9;
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .screen {
+            display: none;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* Top Header Search Bar */
+        .search-bar-container {
+            padding: 8px 16px;
+            position: sticky;
+            top: 0;
+            background-color: #F1F4F9;
+            z-index: 10;
+        }
+
+        .search-bar {
+            background-color: #E9EEF6;
+            height: 48px;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            padding: 0 12px 0 16px;
+            gap: 12px;
+        }
+
+        .search-icon { color: #444746; font-size: 24px; }
+        .search-text { flex: 1; font-size: 16px; color: #444746; }
+
+        .profile-avatar {
+            width: 32px;
+            height: 32px;
+            background-color: #00875A;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        /* Message List */
+        .message-list {
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 80px;
+        }
+
+        .message-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            gap: 16px;
+            cursor: pointer;
+        }
+
+        .message-item:hover, .message-item:active { background-color: #E1E8F5; }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+
+        .bg-blue { background-color: #1A73E8; }
+        .bg-teal { background-color: #00897B; }
+        .bg-green { background-color: #1E8E3E; }
+        .bg-orange { background-color: #E37400; }
+        .bg-yellow { background-color: #F29900; }
+
+        .message-content { flex: 1; min-width: 0; }
+        .message-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2px; }
+        .sender-name { font-size: 16px; font-weight: 500; color: #1F1F1F; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .message-time { font-size: 12px; color: #444746; margin-left: 8px; }
+        .message-body { display: flex; align-items: center; justify-content: space-between; }
+        .message-snippet { font-size: 14px; color: #444746; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; }
+
+        .unread-badge {
+            background-color: #00875A;
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 8px;
+            flex-shrink: 0;
+        }
+
+        /* Floating Action Button */
+        .fab-button {
+            position: fixed;
+            bottom: 24px;
+            right: calc(50% - 190px + 24px);
+            background-color: #C2E7FF;
+            color: #001D35;
+            padding: 16px 20px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            z-index: 5;
+        }
+
+        @media (max-width: 412px) {
+            .fab-button { right: 24px; }
+        }
+
+        /* NEW CHAT SCREEN STYLES */
+        .new-chat-header {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            gap: 20px;
+        }
+
+        .new-chat-header h2 { font-size: 20px; font-weight: 400; color: #1F1F1F; }
+
+        .new-chat-body {
+            padding: 0 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .to-card {
+            background-color: #FFFFFF;
+            border-radius: 20px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .to-input-row { display: flex; align-items: center; gap: 8px; }
+        .to-label { color: #444746; font-size: 16px; }
+        .to-input { border: none; outline: none; font-size: 16px; width: 100%; background: transparent; }
+
+        .with-sim-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid #747775;
+            border-radius: 8px;
+            padding: 4px 10px;
+            font-size: 14px;
+            color: #444746;
+            width: fit-content;
+        }
+
+        .sim-icon { border: 1px solid #444746; border-radius: 3px; padding: 0 3px; font-size: 11px; font-weight: 700; }
+
+        .create-group-btn {
+            background-color: #D8E7D7;
+            color: #111D13;
+            border-radius: 24px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .gemini-card {
+            background-color: #FFFFFF;
+            border-radius: 20px;
+            padding: 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .gemini-star-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #4285F4, #9B51E0);
+            clip-path: polygon(50% 0%, 65% 35%, 100% 50%, 65% 65%, 50% 100%, 35% 65%, 0% 50%, 35% 35%);
+            flex-shrink: 0;
+            margin-top: 4px;
+        }
+
+        .gemini-title { font-size: 16px; font-weight: 500; color: #1F1F1F; }
+        .gemini-desc { font-size: 14px; color: #444746; margin-top: 2px; line-height: 1.3; }
+
+        /* Modal Overlay (Google Account Menu) */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 20;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .account-card {
+            width: 90%;
+            max-width: 360px;
+            background-color: #F2F5F9;
+            border-radius: 28px;
+            padding: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .acc-profile { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 16px; }
+        .acc-avatar {
+            width: 56px; height: 56px; background-color: #00875A; color: white;
+            font-size: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        }
+
+        .manage-btn {
+            border: 1px solid #747775; border-radius: 20px; padding: 6px 16px;
+            font-size: 14px; font-weight: 500; background: transparent; color: #1F1F1F; margin-top: 4px; cursor: pointer;
+        }
+
+        .menu-list { background-color: white; border-radius: 16px; overflow: hidden; margin-top: 12px; }
+        .menu-item { display: flex; align-items: center; gap: 16px; padding: 14px 16px; font-size: 14px; color: #1F1F1F; cursor: pointer; }
+        .menu-item:hover { background-color: #F2F5F9; }
+
+        /* Chat Screen Styling */
+        .chat-header {
+            display: flex; align-items: center; padding: 12px;
+            background-color: #F8FAFD; gap: 12px; border-bottom: 1px solid #E1E8F5;
+        }
+
+        .chat-title { flex: 1; font-size: 18px; font-weight: 500; }
+
+        .chat-body {
+            flex: 1; padding: 16px; display: flex; flex-direction: column; gap: 12px; background-color: #FFFFFF;
+        }
+
+        .date-divider {
+            align-self: center; background-color: #E9EEF6; color: #444746;
+            padding: 4px 12px; border-radius: 12px; font-size: 12px; margin: 12px 0;
+        }
+
+        .message-bubble {
+            max-width: 80%; padding: 12px 16px; border-radius: 18px; font-size: 14px; line-height: 1.4;
+        }
+
+        .received { background-color: #E9EEF6; color: #1F1F1F; border-bottom-left-radius: 4px; align-self: flex-start; }
+
+        .timestamp { font-size: 10px; color: #747775; margin-top: 4px; text-align: right; }
+
+        .chat-footer {
+            padding: 8px 12px; background-color: #F8FAFD; display: flex; align-items: center; gap: 8px;
+        }
+
+        .chat-input-box {
+            flex: 1; background-color: #E9EEF6; border-radius: 24px; padding: 10px 16px;
+            border: none; outline: none; font-size: 15px;
+        }
+
+        .back-btn { cursor: pointer; padding: 4px; }
+    </style>
 </head>
 <body>
 
-  <div class="phone-screen">
-
-    <div class="view-screen" id="dialerView">
-      <div class="top-content-area">
-        
-        <div id="recentsView">
-          <div class="top-bar-header">
-            <div class="search-input-container" id="searchContainer">
-              <input type="text" id="searchInput" placeholder="Search contacts..." oninput="handleSearch(this.value)" />
+    <div class="app-container">
+        <!-- 1. MESSAGES LIST SCREEN -->
+        <div id="list-screen" class="screen active">
+            <div class="search-bar-container">
+                <div class="search-bar">
+                    <span class="material-icons-outlined search-icon">search</span>
+                    <span class="search-text">Search messages</span>
+                    <div class="profile-avatar" onclick="openAccountMenu()">a</div>
+                </div>
             </div>
-            <svg class="top-icon" viewBox="0 0 24 24" onclick="toggleSearch()"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          </div>
 
-          <div class="title-section">
-            <h1 class="app-title" id="pageTitle">Recents</h1>
-            <div class="tabs" id="recentTabs">
-              <div class="tab active">All</div>
-              <div class="tab">Missed Calls</div>
+            <div class="message-list" id="main-inbox-list">
+                <!-- Real-time Firebase Messages Dynamic Fill Honge -->
             </div>
-          </div>
 
-          <div class="recents-list" id="recentsList"></div>
-          <div class="contacts-list" id="contactsList" style="display:none;"></div>
-        </div>
-
-        <div class="typing-options" id="typingOptionsView">
-          <div class="type-opt-row" onclick="createNewContact()"><svg class="type-opt-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span>Create New Contact</span></div>
-        </div>
-      </div>
-
-      <div class="number-bar">
-        <span class="dots-menu-btn" id="dotsBtn">⋮</span>
-        <input type="text" class="number-display-input" id="display" readonly placeholder="" />
-        <div class="backspace-btn" id="backspaceBtn" onclick="deleteDigitAtCursor()">✕</div>
-      </div>
-
-      <div class="keypad-grid">
-        <button class="key-btn" onclick="pressKey('1')"><span class="key-num">1</span><span class="key-sub">⧉</span></button>
-        <button class="key-btn" onclick="pressKey('2')"><span class="key-num">2</span><span class="key-sub">ABC</span></button>
-        <button class="key-btn" onclick="pressKey('3')"><span class="key-num">3</span><span class="key-sub">DEF</span></button>
-        <button class="key-btn" onclick="pressKey('4')"><span class="key-num">4</span><span class="key-sub">GHI</span></button>
-        <button class="key-btn" onclick="pressKey('5')"><span class="key-num">5</span><span class="key-sub">JKL</span></button>
-        <button class="key-btn" onclick="pressKey('6')"><span class="key-num">6</span><span class="key-sub">MNO</span></button>
-        <button class="key-btn" onclick="pressKey('7')"><span class="key-num">7</span><span class="key-sub">PQRS</span></button>
-        <button class="key-btn" onclick="pressKey('8')"><span class="key-num">8</span><span class="key-sub">TUV</span></button>
-        <button class="key-btn" onclick="pressKey('9')"><span class="key-num">9</span><span class="key-sub">WXYZ</span></button>
-        <button class="key-btn" onclick="pressKey('*')"><span class="key-num" style="font-size:28px;">*</span></button>
-        <button class="key-btn" onclick="pressKey('0')"><span class="key-num">0</span><span class="key-sub">+</span></button>
-        <button class="key-btn" onclick="pressKey('#')"><span class="key-num">#</span></button>
-      </div>
-
-      <div class="action-row">
-        <button class="action-circle-btn"><svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg></button>
-        <div class="call-capsule-btn">
-          <button class="sim-segment" onclick="openSimChooserForTyped(1)"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span class="sim-num">1</span></button>
-          <button class="sim-segment" onclick="openSimChooserForTyped(2)"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span class="sim-num">2</span></button>
-        </div>
-        <button class="action-circle-btn whatsapp-btn" onclick="openWhatsApp()"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.572-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413"/></svg></button>
-        <button class="action-circle-btn"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg></button>
-      </div>
-
-      <div class="bottom-navbar">
-        <div class="nav-tab active" id="navRecents" onclick="switchNavTab('recents')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Recents</span></div>
-        <div class="nav-tab" id="navContacts" onclick="switchNavTab('contacts')"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Contacts</span></div>
-      </div>
-    </div>
-
-    <!-- SECRET ADMIN PANEL -->
-    <div class="admin-modal-overlay" id="adminModal">
-      <div class="admin-card">
-        <div class="admin-title">⚙️ Secret Admin Control Panel</div>
-
-        <div class="admin-field">
-          <label>Wallet Balance (Rs):</label>
-          <input type="number" id="adminAccountBalance" value="780.46" />
-        </div>
-
-        <div class="admin-section-title">🔮 Add Custom USSD Code (Non-*786#)</div>
-        <div class="admin-field">
-          <label>Custom USSD Code (e.g. *111#):</label>
-          <input type="text" id="customUssdCode" placeholder="e.g. *111#" />
-        </div>
-        <div class="admin-field">
-          <label>First Prompt Menu Message:</label>
-          <textarea id="customUssdMenuText" rows="2" placeholder="e.g. Enter Option Number:"></textarea>
-        </div>
-        <div class="admin-field">
-          <label>Final Response Message (Stops Process):</label>
-          <textarea id="customUssdResponseText" rows="3" placeholder="e.g. Action completed successfully!"></textarea>
-        </div>
-        <button class="admin-add-btn" onclick="addCustomUssdRule()">+ Save Custom USSD Code</button>
-        <div class="db-list" id="customUssdDbList"></div>
-
-        <div class="admin-section-title">📱 Add Account (Mobile / CNIC / IBAN)</div>
-        <div class="admin-field">
-          <label>Account Type:</label>
-          <select id="newAccountType">
-            <option value="JazzCash">JazzCash Mobile A/C</option>
-            <option value="Easypaisa Bank Limited">Easypaisa Bank Limited</option>
-            <option value="Upaisa">Upaisa Mobile A/C</option>
-            <option value="SadaPay">SadaPay Mobile A/C</option>
-            <option value="NayaPay">NayaPay Mobile A/C</option>
-            <option value="CNIC">CNIC Number (13 Digits)</option>
-            <option value="Bank">Bank Account Number</option>
-            <option value="Raast">Raast ID / IBAN</option>
-          </select>
-        </div>
-        <div class="admin-field">
-          <label>Number / CNIC / IBAN:</label>
-          <input type="text" id="newMobileNum" placeholder="e.g. 03088085231, 03084191378" />
-        </div>
-        <div class="admin-field">
-          <label>Account Holder Name:</label>
-          <input type="text" id="newHolderName" placeholder="e.g. BASHEER AHMED" />
-        </div>
-        <button class="admin-add-btn" onclick="addMobileRecord()">+ Add Valid Account Record</button>
-        <div class="db-list" id="mobileDbList"></div>
-
-        <div class="admin-section-title">🏪 Add Merchant (Till ID Database)</div>
-        <div class="admin-field">
-          <label>Till ID Number:</label>
-          <input type="text" id="newTillId" placeholder="e.g. 981562047" />
-        </div>
-        <div class="admin-field">
-          <label>Merchant / Shop Name:</label>
-          <input type="text" id="newMerchantName" placeholder="e.g. MASHALLAH_MOBILE_SHOP" />
-        </div>
-        <button class="admin-add-btn" onclick="addTillRecord()">+ Add Till ID</button>
-        <div class="db-list" id="tillDbList"></div>
-
-        <button class="admin-close-btn" onclick="closeAdminPanel()">Save & Close</button>
-      </div>
-    </div>
-
-    <!-- FAKE CALL SCREEN -->
-    <div class="fake-call-screen" id="fakeCallScreen">
-      <div>
-        <div class="call-contact-name" id="callName">03007421652</div>
-        <div class="call-status-timer" id="callTimer">Ringing...</div>
-      </div>
-      <div class="call-grid-options">
-        <div class="call-opt-btn"><div class="call-opt-circle">🎙️</div>Mute</div>
-        <div class="call-opt-btn"><div class="call-opt-circle">⌨️</div>Keypad</div>
-        <div class="call-opt-btn"><div class="call-opt-circle">🔊</div>Speaker</div>
-        <div class="call-opt-btn"><div class="call-opt-circle">➕</div>Add call</div>
-        <div class="call-opt-btn"><div class="call-opt-circle">📹</div>Video</div>
-        <div class="call-opt-btn"><div class="call-opt-circle">👤</div>Contacts</div>
-      </div>
-      <button class="end-call-btn" onclick="endFakeCall()">
-        <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-      </button>
-    </div>
-
-    <!-- SIM CHOOSER OVERLAY -->
-    <div class="sim-chooser-overlay" id="simChooserModal">
-      <div class="sim-chooser-card">
-        <div class="sim-chooser-title">Choose SIM for This Call</div>
-        <div class="sim-option-item" onclick="confirmSimSelection(1)">
-          <div class="sim-option-icon">1</div>
-          <div class="sim-option-details">
-            <div class="sim-name">Jazz (SIM 1)</div>
-            <div class="sim-num-text">ANAM SABUR - 0308 8085231</div>
-          </div>
-        </div>
-        <div class="sim-option-item" onclick="confirmSimSelection(2)">
-          <div class="sim-option-icon">2</div>
-          <div class="sim-option-details">
-            <div class="sim-name">Jazz (SIM 2)</div>
-            <div class="sim-num-text">SARFRAZ AHMAD - 0300 7421652</div>
-          </div>
-        </div>
-        <button class="sim-cancel-btn" onclick="closeSimChooser()">Cancel</button>
-      </div>
-    </div>
-
-    <!-- USSD DIALOG MODALS -->
-    <div class="ussd-running-overlay" id="ussdRunningOverlay">
-      <div class="ussd-running-card">
-        <div class="running-dots-pill">
-          <div class="running-dot"></div>
-          <div class="running-dot"></div>
-        </div>
-        <div class="ussd-running-text-style">USSD code running...</div>
-      </div>
-    </div>
-
-    <div class="ussd-dialog-overlay" id="ussdDialogModal">
-      <div class="ussd-dialog-card">
-        <div class="ussd-dialog-text" id="ussdDialogText"></div>
-        <div class="ussd-dialog-input-wrap">
-          <input type="text" class="ussd-dialog-input" id="ussdDialogInput" placeholder="" onfocus="onInputFocus(true)" onblur="onInputFocus(false)" autofocus />
-        </div>
-        <div class="ussd-dialog-actions">
-          <button class="ussd-btn-cancel" onclick="closeUssdDialog()">Cancel</button>
-          <button class="ussd-btn-send" onclick="handleUssdSubmit()">Send</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="msg-prompt-overlay" id="msgPromptModal">
-      <div class="msg-prompt-card">
-        <div class="msg-prompt-text" id="msgPromptText"></div>
-        <div class="msg-prompt-actions">
-          <button class="msg-prompt-ok-btn" onclick="closeMsgPromptModal()">OK</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="mmi-error-overlay" id="mmiErrorModal">
-      <div class="mmi-error-card">
-        <div class="mmi-error-title">Jazz Message</div>
-        <div class="mmi-error-text">Connection problem or invalid MMI code.</div>
-        <div class="mmi-error-ok-btn" onclick="closeMmiErrorModal()">OK</div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- Firebase Integration Script -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
-  <!-- Service Worker Registration for Offline Performance -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      const swCode = `
-        const CACHE_NAME = 'jazzcash-dialer-offline-v1';
-        self.addEventListener('install', e => {
-          e.waitUntil(
-            caches.open(CACHE_NAME).then(cache => cache.addAll(['./']))
-          );
-        });
-        self.addEventListener('fetch', e => {
-          e.respondWith(
-            caches.match(e.request).then(response => response || fetch(e.request))
-          );
-        });
-      `;
-      const blob = new Blob([swCode], { type: 'text/javascript' });
-      const swUrl = URL.createObjectURL(blob);
-      navigator.serviceWorker.register(swUrl).catch(() => {});
-    }
-  </script>
-
-  <script>
-    // Firebase Realtime Config
-    const firebaseConfig = {
-      databaseURL: "https://mysmsbridge-8f994-default-rtdb.firebaseio.com/"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
-
-    function pushSmsToFirebase(sender, messageText) {
-      if (navigator.onLine) {
-        database.ref('sms_messages').push({
-          sender: sender,
-          msg: messageText,
-          timestamp: Date.now()
-        });
-      }
-    }
-
-    // REALTIME LISTENER TO RECEIVE MESSAGES FROM FIREBASE
-    let isInitialLoad = true;
-    database.ref('sms_messages').limitToLast(1).on('child_added', (snapshot) => {
-      if (isInitialLoad) {
-        isInitialLoad = false; // Ignore existing data on first load
-        return;
-      }
-      const data = snapshot.val();
-      if (data && data.msg) {
-        const sender = data.sender ? data.sender : '8558';
-        openMsgPromptModal(`📩 Received SMS from ${sender}:\n\n${data.msg}`);
-      }
-    });
-
-    let currentStep = "MAIN_MENU";
-    let historyStack = [];
-    let tempAccountNum = "";
-    let tempAmount = "";
-    let tempBillRef = "";
-    let tempHolderName = "";
-    let tempTransferType = "JazzCash";
-    let pendingCallTarget = "";
-    let pendingCallName = "";
-    let activeLoan = 0;
-    
-    // DUAL SIM PROFILES CONFIGURATION
-    let activeSimSlot = 1;
-    let simProfiles = {
-      1: { name: "ANAM SABUR", pin: "0303", phone: "03088085231" },
-      2: { name: "SARFRAZ AHMAD", pin: "1123", phone: "03007421652" }
-    };
-
-    function getActiveOwnerName() {
-      return simProfiles[activeSimSlot].name;
-    }
-
-    function getActiveRequiredPin() {
-      return simProfiles[activeSimSlot].pin;
-    }
-
-    // PERMANENT BALANCE & ACCURATE STATEMENT STORAGE
-    let storedBal = localStorage.getItem("permanentBalance");
-    let userBalance = storedBal !== null ? parseFloat(storedBal) : 780.46;
-
-    let storedStatement = localStorage.getItem("realMiniStatementDB");
-    let miniStatementDB = storedStatement ? JSON.parse(storedStatement) : [];
-
-    function setPermanentBalance(amt) {
-      userBalance = parseFloat(amt);
-      localStorage.setItem("permanentBalance", userBalance.toFixed(2));
-    }
-
-    function maskNumber(str) {
-      if (!str || str.length < 7) return str;
-      let len = str.length;
-      return str.substring(0, 4) + "****" + str.substring(len - 3);
-    }
-
-    function addTransactionToStatement(type, rawNum, amountStr) {
-      const tid = Math.floor(700000000000 + Math.random() * 200000000000);
-      const now = new Date();
-      const dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
-      const masked = maskNumber(rawNum);
-
-      miniStatementDB.unshift({
-        type: type,
-        account: masked,
-        amount: amountStr,
-        date: dateStr,
-        tid: tid.toString()
-      });
-
-      localStorage.setItem("realMiniStatementDB", JSON.stringify(miniStatementDB));
-    }
-
-    let activeCustomRule = null;
-    let customUssdRules = {}; 
-
-    let officialContacts = [
-      { name: "Baba Jan", number: "03088085231" },
-      { name: "Molar Imtiaz", number: "03286454952" },
-      { name: "Arif Khan", number: "03007421652" },
-      { name: "Imran Ali", number: "03131472760" },
-      { name: "Chacha Riaz", number: "03288913250" },
-      { name: "Asif Khlid J", number: "03004812390" }
-    ];
-
-    let recentsHistoryDB = [
-      { name: "Zeenab", number: "03457174930", sim: 2, time: "07:49 PM" },
-      { name: "Imran Ali", number: "03131472760", sim: 2, time: "06:28 PM" }
-    ];
-
-    let accountsDB = [
-      { number: "03088085231", name: "ANAM SABUR", type: "JazzCash" },
-      { number: "03084191378", name: "ANAM SABUR", type: "JazzCash" },
-      { number: "03007421652", name: "SARFRAZ AHMAD", type: "JazzCash" },
-      { number: "03286454952", name: "Molar Imtiaz", type: "JazzCash" },
-      { number: "03131472760", name: "Imran Ali", type: "Easypaisa Bank Limited" },
-      { number: "03413268374", name: "Imran Ali", type: "Telenor" },
-      { number: "03335566778", name: "Kamran Akmal", type: "Upaisa" },
-      { number: "3520112345671", name: "MUHAMMAD USMAN", type: "CNIC" },
-      { number: "1002938475610293", name: "Zohaib Hassan - HBL", type: "Bank" },
-      { number: "PK92JAZZ00001234567890", name: "BASHEER AHMED", type: "Raast" }
-    ];
-
-    let tillIdsDB = [
-      { id: "981562047", name: "MASHALLAH MOBILE SHOP" },
-      { id: "983843924", name: "HOT BITE PIZZA AND FAST FOOD" },
-      { id: "32546", name: "GULSHAN GENERAL STORE" },
-      { id: "981562051", name: "MPa" },
-      { id: "981562050", name: "MASHALLAH fjfuududP" },
-      { id: "981562049", name: "aP" },
-      { id: "981562048", name: " SHOP" }
-    ];
-
-    let fakeCallTimeout = null;
-
-    window.onload = function() {
-      renderRecents();
-      renderContacts();
-    };
-
-    function onInputFocus(isFocused) {
-      const modal = document.getElementById("ussdDialogModal");
-      if (isFocused) {
-        modal.classList.add("focused-top");
-      } else {
-        modal.classList.remove("focused-top");
-      }
-    }
-
-    function renderRecents(filteredList = null) {
-      const list = document.getElementById("recentsList");
-      let html = "";
-      let data = filteredList || recentsHistoryDB;
-      data.forEach(item => {
-        html += `
-          <div class="recent-item" onclick="triggerCallWithName('${item.name}', '${item.number}')">
-            <div class="recent-left">
-              <svg class="call-arrow" viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-              <div class="contact-info">
-                <div class="name">${item.name}</div>
-                <div class="badge-type"><span class="sim-badge">${item.sim}</span> Mobile</div>
-              </div>
+            <div class="fab-button" onclick="showNewChatView()">
+                <span class="material-icons-outlined">chat_bubble</span>
+                <span>Start chat</span>
             </div>
-            <div class="recent-right">
-              <div class="time-stamp">${item.time}</div>
-              <div class="info-icon">i</div>
+        </div>
+
+        <!-- 2. NEW CHAT SCREEN -->
+        <div id="new-chat-screen" class="screen">
+            <div class="new-chat-header">
+                <span class="material-icons-outlined back-btn" onclick="showListScreen()">arrow_back</span>
+                <h2>New chat</h2>
             </div>
-          </div>
-        `;
-      });
-      list.innerHTML = html || `<div style="text-align:center; padding:20px; color:#888;">No recents found</div>`;
-    }
 
-    function renderContacts(filteredList = null) {
-      const list = document.getElementById("contactsList");
-      let html = "";
-      let data = filteredList || officialContacts;
-      data.forEach(c => {
-        const initial = c.name.charAt(0).toUpperCase();
-        html += `
-          <div class="contact-item" onclick="triggerCallWithName('${c.name}', '${c.number}')">
-            <div class="contact-left">
-              <div class="contact-avatar">${initial}</div>
-              <div class="contact-info">
-                <div class="name">${c.name}</div>
-                <div class="phone-num">${c.number}</div>
-              </div>
+            <div class="new-chat-body">
+                <div class="to-card">
+                    <div class="to-input-row">
+                        <span class="to-label">To:</span>
+                        <input type="text" class="to-input" placeholder="Type name, phone number, or email" autofocus>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 14px; color: #444746;">With:</span>
+                        <div class="with-sim-btn">
+                            <span class="sim-icon">1</span> Jazz
+                        </div>
+                    </div>
+                </div>
+
+                <div class="create-group-btn">
+                    <span class="material-icons-outlined">group_add</span>
+                    <span>Create group</span>
+                </div>
+
+                <div class="gemini-card" onclick="openChat('Gemini', 'Write, plan, learn, and more with Google AI')">
+                    <div class="gemini-star-icon"></div>
+                    <div>
+                        <div class="gemini-title">Gemini</div>
+                        <div class="gemini-desc">Write, plan, learn, and more with Google AI</div>
+                    </div>
+                </div>
             </div>
-          </div>
-        `;
-      });
-      list.innerHTML = html || `<div style="text-align:center; padding:20px; color:#888;">No contacts found</div>`;
-    }
+        </div>
 
-    function toggleSearch() {
-      const container = document.getElementById("searchContainer");
-      if (container.style.display === "block") {
-        container.style.display = "none";
-        renderRecents();
-        renderContacts();
-      } else {
-        container.style.display = "block";
-        document.getElementById("searchInput").focus();
-      }
-    }
+        <!-- 3. CHAT SCREEN VIEW -->
+        <div id="chat-screen" class="screen">
+            <div class="chat-header">
+                <span class="material-icons-outlined back-btn" onclick="showListScreen()">arrow_back</span>
+                <span class="chat-title" id="chat-title-text">Contact Name</span>
+                <span class="material-icons-outlined">search</span>
+                <span class="material-icons-outlined">more_vert</span>
+            </div>
 
-    function handleSearch(query) {
-      let q = query.toLowerCase();
-      let filteredRecents = recentsHistoryDB.filter(r => r.name.toLowerCase().includes(q) || r.number.includes(q));
-      let filteredContacts = officialContacts.filter(c => c.name.toLowerCase().includes(q) || c.number.includes(q));
-      renderRecents(filteredRecents);
-      renderContacts(filteredContacts);
-    }
+            <div class="chat-body" id="chat-conversation-body">
+                <div class="date-divider" id="chat-date-header">Today</div>
+            </div>
 
-    function switchNavTab(tab) {
-      const navRecents = document.getElementById("navRecents");
-      const navContacts = document.getElementById("navContacts");
-      const recentsList = document.getElementById("recentsList");
-      const contactsList = document.getElementById("contactsList");
-      const pageTitle = document.getElementById("pageTitle");
-      const recentTabs = document.getElementById("recentTabs");
+            <div class="chat-footer">
+                <span class="material-icons-outlined">add_circle_outline</span>
+                <input type="text" class="chat-input-box" placeholder="Text message (SMS/MMS)">
+                <span class="material-icons-outlined">send</span>
+            </div>
+        </div>
+    </div>
 
-      if (tab === 'contacts') {
-        navRecents.classList.remove("active");
-        navContacts.classList.add("active");
-        recentsList.style.display = "none";
-        contactsList.style.display = "block";
-        recentTabs.style.display = "none";
-        pageTitle.innerText = "Contacts";
-      } else {
-        navContacts.classList.remove("active");
-        navRecents.classList.add("active");
-        contactsList.style.display = "none";
-        recentsList.style.display = "block";
-        recentTabs.style.display = "flex";
-        pageTitle.innerText = "Recents";
-      }
-    }
+    <!-- 4. GOOGLE ACCOUNT MENU MODAL -->
+    <div id="account-modal" class="modal-overlay" onclick="closeAccountMenu(event)">
+        <div class="account-card" onclick="event.stopPropagation()">
+            <div class="acc-profile">
+                <div class="acc-avatar">a</div>
+                <div style="font-weight: 500; font-size: 16px;">Hi, ayesha!</div>
+                <button class="manage-btn">Manage your Google Account</button>
+            </div>
 
-    function getActiveInputField() {
-      if (document.getElementById("ussdDialogModal").style.display === "flex") {
-        return document.getElementById("ussdDialogInput");
-      }
-      return document.getElementById("display");
-    }
+            <div class="menu-list">
+                <div class="menu-item"><span class="material-icons-outlined">person_outline</span> Your profile</div>
+                <div class="menu-item"><span class="material-icons-outlined">archive</span> Archived</div>
+                <div class="menu-item"><span class="material-icons-outlined">delete_outline</span> Trash</div>
+                <div class="menu-item"><span class="material-icons-outlined">gpp_maybe</span> Spam & blocked</div>
+                <div class="menu-item"><span class="material-icons-outlined">done_all</span> Mark all as read</div>
+                <div class="menu-item"><span class="material-icons-outlined">phonelink</span> Device pairing</div>
+                <div class="menu-item"><span class="material-icons-outlined">security</span> Your data in Messages</div>
+                <div class="menu-item"><span class="material-icons-outlined">settings</span> Messages settings</div>
+                <div class="menu-item"><span class="material-icons-outlined">help_outline</span> Help & feedback</div>
+            </div>
+        </div>
+    </div>
 
-    function onDisplayInputChange() {
-      const displayElem = document.getElementById("display");
-      const recentsView = document.getElementById("recentsView");
-      const typingOptionsView = document.getElementById("typingOptionsView");
-      const backspaceBtn = document.getElementById("backspaceBtn");
-      const val = displayElem.value;
+    <script>
+        // FIREBASE INITIALIZATION (Same Realtime DB as Dialer App)
+        const firebaseConfig = {
+            databaseURL: "https://mysmsbridge-8f994-default-rtdb.firebaseio.com/"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
 
-      if (val.length > 0) {
-        recentsView.style.display = "none";
-        typingOptionsView.style.display = "flex";
-        backspaceBtn.style.display = "flex";
-      } else {
-        recentsView.style.display = "block";
-        typingOptionsView.style.display = "none";
-        backspaceBtn.style.display = "none";
-      }
-    }
+        // Notification Permission Request
+        if ("Notification" in window) {
+            Notification.requestPermission();
+        }
 
-    function pressKey(digit) {
-      const input = getActiveInputField();
-      input.value = input.value + digit;
+        let isInitialLoad = true;
 
-      if (input.id === "display") onDisplayInputChange();
-    }
+        // REAL-TIME LISTENER FOR INCOMING SMS FROM DIALER APP
+        database.ref('sms_messages').on('child_added', (snapshot) => {
+            const data = snapshot.val();
+            if (!data) return;
 
-    function deleteDigitAtCursor() {
-      const input = getActiveInputField();
-      let text = input.value;
-      if (text.length > 0) {
-        input.value = text.substring(0, text.length - 1);
-      }
-      if (input.id === "display") onDisplayInputChange();
-    }
+            const sender = data.sender || '8558';
+            const msgText = data.msg || '';
+            const timestamp = data.timestamp ? new Date(data.timestamp) : new Date();
+            const timeFormatted = timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-    function openWhatsApp() {
-      const input = document.getElementById("display");
-      let num = input.value.trim();
-      if (!num) {
-        alert("پہلے کوئی نمبر لکھیں!");
-        return;
-      }
-      let cleanNum = num.replace(/[^0-9]/g, '');
-      if (cleanNum.startsWith("0")) {
-        cleanNum = "92" + cleanNum.substring(1);
-      }
-      window.open(`https://wa.me/${cleanNum}`, '_blank');
-    }
+            // Add SMS to Inbox List
+            addSmsToInbox(sender, msgText, timeFormatted);
 
-    function openSimChooserForTyped(simIndex) {
-      activeSimSlot = simIndex;
-      const input = document.getElementById("display");
-      let num = input.value.trim();
-      if (num === "") return;
-      pendingCallTarget = num;
-      pendingCallName = pendingCallTarget;
-      confirmSimSelection(simIndex);
-    }
-
-    function triggerCallWithName(name, number) {
-      pendingCallTarget = number;
-      pendingCallName = name;
-      document.getElementById("simChooserModal").style.display = "flex";
-    }
-
-    function closeSimChooser() {
-      document.getElementById("simChooserModal").style.display = "none";
-    }
-
-    function confirmSimSelection(simNo) {
-      activeSimSlot = simNo;
-      closeSimChooser();
-      const cleanNum = pendingCallTarget;
-
-      if (cleanNum === "0000") {
-        renderAdminLists();
-        document.getElementById("adminModal").style.display = "flex";
-        document.getElementById("display").value = "";
-        onDisplayInputChange();
-        return;
-      }
-
-      const isUssdCode = cleanNum.includes("*") || cleanNum.includes("#");
-
-      if (!isUssdCode) {
-        const foundContact = officialContacts.find(c => c.number === cleanNum);
-        const nameToLog = foundContact ? foundContact.name : cleanNum;
-        recentsHistoryDB.unshift({
-          name: nameToLog,
-          number: cleanNum,
-          sim: simNo,
-          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            // Ring Sound & System Notification when App is open or in background
+            if (!isInitialLoad) {
+                playNotificationSound();
+                showSystemNotification(sender, msgText);
+            }
         });
-        renderRecents();
-        startFakeRingingCall(nameToLog, cleanNum, simNo);
-      } else {
-        if (customUssdRules[cleanNum]) {
-          activeCustomRule = customUssdRules[cleanNum];
-          runUssdDelay(() => {
-            currentStep = "CUSTOM_USSD_INPUT";
-            showCustomUssdStep(activeCustomRule.menu);
-          });
-        } 
-        else {
-          let body = cleanNum.replace(/^[*]/, '').replace(/[#]$/, '');
-          let parts = body.split("*");
 
-          if (parts[0] === "786") {
-            historyStack = [];
-            if (parts.length === 1) {
-              runUssdDelay(() => showStep("MAIN_MENU"));
-            } else {
-              runUssdDelay(() => processMultiStringUSSD(parts.slice(1)));
+        // Delay sound trigger for initial historical DB load
+        setTimeout(() => { isInitialLoad = false; }, 2000);
+
+        function addSmsToInbox(sender, msg, timeStr) {
+            const list = document.getElementById('main-inbox-list');
+            const itemHtml = `
+                <div class="message-item" onclick="openChat('${sender}', '${msg.replace(/'/g, "\\'")}')">
+                    <div class="avatar bg-green">${sender.charAt(0)}</div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <span class="sender-name">${sender}</span>
+                            <span class="message-time">${timeStr}</span>
+                        </div>
+                        <div class="message-body">
+                            <span class="message-snippet">${msg}</span>
+                            <span class="unread-badge">1</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            list.insertAdjacentHTML('afterbegin', itemHtml);
+        }
+
+        function playNotificationSound() {
+            try {
+                const audio = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg');
+                audio.play();
+            } catch (e) {
+                console.log("Audio play blocked by browser policy");
             }
-          } else {
-            runUssdDelay(() => showMmiErrorModal());
-          }
         }
-      }
 
-      document.getElementById("display").value = "";
-      onDisplayInputChange();
-    }
-
-    function showCustomUssdStep(menuText) {
-      const dialogText = document.getElementById("ussdDialogText");
-      const inputElem = document.getElementById("ussdDialogInput");
-      inputElem.value = "";
-      dialogText.innerText = menuText;
-      document.getElementById("ussdDialogModal").style.display = "flex";
-      setTimeout(() => { 
-        inputElem.focus(); 
-      }, 100);
-    }
-
-    function showMmiErrorModal() {
-      document.getElementById("mmiErrorModal").style.display = "flex";
-    }
-
-    function closeMmiErrorModal() {
-      document.getElementById("mmiErrorModal").style.display = "none";
-    }
-
-    function startFakeRingingCall(name, num, simNo) {
-      document.getElementById("callName").innerHTML = `${name}<br><span style="font-size:14px; color:#aaa; font-weight:normal;">[SIM ${simNo}] ${num}</span>`;
-      document.getElementById("callTimer").innerText = "Ringing...";
-      document.getElementById("fakeCallScreen").style.display = "flex";
-
-      fakeCallTimeout = setTimeout(() => {
-        document.getElementById("callTimer").innerText = "User busy at moment";
-        setTimeout(() => { endFakeCall(); }, 2000);
-      }, 8000);
-    }
-
-    function endFakeCall() {
-      clearTimeout(fakeCallTimeout);
-      document.getElementById("fakeCallScreen").style.display = "none";
-    }
-
-    function renderAdminLists() {
-      document.getElementById("adminAccountBalance").value = userBalance;
-
-      let ussdHtml = "";
-      for (let code in customUssdRules) {
-        ussdHtml += `<div class="db-item"><span><b>Code:</b> ${code}</span><span class="del-btn" onclick="deleteCustomUssdRule('${code}')">✕</span></div>`;
-      }
-      document.getElementById("customUssdDbList").innerHTML = ussdHtml || "No Custom USSD Triggers Added";
-
-      let mobileHtml = "";
-      accountsDB.forEach((item, index) => {
-        mobileHtml += `<div class="db-item"><span>[${item.type}] ${item.number} - <b>${item.name}</b></span><span class="del-btn" onclick="deleteMobileRecord(${index})">✕</span></div>`;
-      });
-      document.getElementById("mobileDbList").innerHTML = mobileHtml || "No Mobile Accounts Added";
-
-      let tillHtml = "";
-      tillIdsDB.forEach((item, index) => {
-        tillHtml += `<div class="db-item"><span>ID: ${item.id} - <b>${item.name}</b></span><span class="del-btn" onclick="deleteTillRecord(${index})">✕</span></div>`;
-      });
-      document.getElementById("tillDbList").innerHTML = tillHtml || "No Till IDs Added";
-    }
-
-    function addCustomUssdRule() {
-      const code = document.getElementById("customUssdCode").value.trim();
-      const menu = document.getElementById("customUssdMenuText").value.trim();
-      const response = document.getElementById("customUssdResponseText").value.trim();
-
-      if (code && menu && response) {
-        customUssdRules[code] = { menu: menu, response: response };
-        document.getElementById("customUssdCode").value = "";
-        document.getElementById("customUssdMenuText").value = "";
-        document.getElementById("customUssdResponseText").value = "";
-        renderAdminLists();
-      } else {
-        alert("Enter Code, Menu Prompt, and Response!");
-      }
-    }
-
-    function deleteCustomUssdRule(code) {
-      delete customUssdRules[code];
-      renderAdminLists();
-    }
-
-    function addMobileRecord() {
-      const type = document.getElementById("newAccountType").value;
-      const num = document.getElementById("newMobileNum").value.trim();
-      const name = document.getElementById("newHolderName").value.trim();
-      if (num && name) {
-        accountsDB.push({ number: num, name: name, type: type });
-        document.getElementById("newMobileNum").value = "";
-        document.getElementById("newHolderName").value = "";
-        renderAdminLists();
-      } else {
-        alert("Enter both number/CNIC/IBAN and holder name!");
-      }
-    }
-
-    function deleteMobileRecord(index) {
-      accountsDB.splice(index, 1);
-      renderAdminLists();
-    }
-
-    function addTillRecord() {
-      const id = document.getElementById("newTillId").value.trim();
-      const name = document.getElementById("newMerchantName").value.trim();
-      if (id && name) {
-        tillIdsDB.push({ id: id, name: name });
-        document.getElementById("newTillId").value = "";
-        document.getElementById("newMerchantName").value = "";
-        renderAdminLists();
-      } else {
-        alert("Enter both Till ID and Merchant name!");
-      }
-    }
-
-    function deleteTillRecord(index) {
-      tillIdsDB.splice(index, 1);
-      renderAdminLists();
-    }
-
-    function closeAdminPanel() {
-      const bal = document.getElementById("adminAccountBalance").value;
-      if (bal !== "") setPermanentBalance(bal);
-      document.getElementById("adminModal").style.display = "none";
-    }
-
-    function processMultiStringUSSD(cmds) {
-      if (cmds[0] === "6") {
-        if (cmds.length === 1) showStep("MY_ACCOUNT_MENU");
-        else if (cmds[1] === "2") showStep("CHECK_BALANCE_PIN");
-        else if (cmds[1] === "3") displayMiniStatement();
-      }
-      else if (cmds[0] === "4") {
-        if (cmds.length === 1) showStep("READY_CASH_MENU");
-        else if (cmds[1] === "1") showStep("READY_CASH_ELIGIBLE");
-      }
-      else if (cmds[0] === "1") {
-        if (cmds.length === 1) showStep("SEND_MONEY_MENU");
-        else if (cmds[1] === "1") {
-          if (cmds.length === 2) showStep("MOBILE_ACCOUNT_MENU");
-          else if (cmds.length === 3) {
-            tempTransferType = cmds[2] === "1" ? "JazzCash" : cmds[2] === "2" ? "Easypaisa Bank Limited" : "Upaisa";
-            showStep("ENTER_NUMBER");
-          } else if (cmds.length >= 5) {
-            tempTransferType = cmds[2] === "1" ? "JazzCash" : cmds[2] === "2" ? "Easypaisa Bank Limited" : "Upaisa";
-            tempAccountNum = cmds[3];
-            tempAmount = cmds[4];
-            let matched = accountsDB.find(a => a.number === tempAccountNum);
-            if (!matched) {
-              openMsgPromptModal(`Account invalid! Please try again with a valid account number`);
-              return;
+        function showSystemNotification(sender, text) {
+            if ("Notification" in window && Notification.permission === "granted") {
+                const options = {
+                    body: text,
+                    icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Google_Messages_logo_%282022%29.svg/512px-Google_Messages_logo_%282022%29.svg.png',
+                    vibrate: [200, 100, 200]
+                };
+                new Notification(`${sender} Messages now`, options);
             }
-            tempHolderName = matched.name;
-            showStep("CONFIRMATION_JAZZCASH");
-          }
-        }
-        else if (cmds[1] === "2") {
-          if (cmds.length === 2) showStep("ENTER_CNIC");
-          else if (cmds.length >= 4) {
-            tempTransferType = "CNIC";
-            tempAccountNum = cmds[2];
-            tempAmount = cmds[3];
-            let matched = accountsDB.find(a => a.number === tempAccountNum);
-            if (!matched || tempAccountNum.length !== 13) {
-              openMsgPromptModal(`CNIC invalid! Please try again with a registered CNIC.`);
-              return;
-            }
-            tempHolderName = matched.name;
-            showStep("CONFIRMATION_JAZZCASH");
-          }
-        }
-        else if (cmds[1] === "4") {
-          if (cmds.length === 2) showStep("RAAST_ENTER_NUMBER");
-          else if (cmds.length >= 4) {
-            tempTransferType = "Raast";
-            tempAccountNum = cmds[2];
-            tempAmount = cmds[3];
-            let matched = accountsDB.find(a => a.number === tempAccountNum);
-            if (!matched) {
-              openMsgPromptModal(`Raast ID invalid! Please try again.`);
-              return;
-            }
-            tempHolderName = matched.name;
-            showStep("CONFIRMATION_JAZZCASH");
-          }
-        }
-        else if (cmds[1] === "6" && cmds[2] === "1") {
-          openMsgPromptModal("Dear Customer, your pending transfer transaction has been cancelled successfully.");
-          pushSmsToFirebase("8558", "Transaction cancelled successfully.");
-          return;
-        }
-      }
-      else if (cmds[0] === "10") {
-        if (cmds.length === 1) showStep("ENTER_TILL_ID");
-        else if (cmds.length >= 3) {
-          tempAccountNum = cmds[1];
-          tempAmount = cmds[2];
-          let matchedTill = tillIdsDB.find(t => t.id === tempAccountNum);
-          if (!matchedTill) {
-            openMsgPromptModal(`Invalid Till ID`);
-            return;
-          }
-          tempHolderName = matchedTill.name;
-          showStep("TILL_CONFIRMATION");
-        }
-      } else {
-        showStep("MAIN_MENU");
-      }
-    }
-
-    function runUssdDelay(callback) {
-      closeUssdDialog();
-      const ussdOverlay = document.getElementById("ussdRunningOverlay");
-      ussdOverlay.style.display = "flex";
-      const delay = Math.floor(Math.random() * (1800 - 1000 + 1)) + 1000;
-
-      setTimeout(() => {
-        ussdOverlay.style.display = "none";
-        callback();
-      }, delay);
-    }
-
-    function displayMiniStatement() {
-      let last4 = miniStatementDB.slice(0, 4);
-      let text = "JazzCash Mini Statement (Last 4 Txns):\n";
-      
-      if (last4.length === 0) {
-        text += "\nNo transaction found.\n";
-      } else {
-        last4.forEach((t, i) => {
-          text += `${i+1}. ${t.type} (${t.account}): ${t.amount} (${t.date})\n   TID: ${t.tid}\n`;
-        });
-      }
-      text += "\n0:Back\n00:Main Menu";
-      
-      const dialogText = document.getElementById("ussdDialogText");
-      const inputElem = document.getElementById("ussdDialogInput");
-      inputElem.value = "";
-      dialogText.innerText = text;
-      document.getElementById("ussdDialogModal").style.display = "flex";
-      currentStep = "MINI_STATEMENT_VIEW";
-    }
-
-    function showStep(step, isNavigatingBack = false) {
-      if (!isNavigatingBack && currentStep && currentStep !== step) {
-        historyStack.push(currentStep);
-      }
-
-      currentStep = step;
-      const dialogText = document.getElementById("ussdDialogText");
-      const inputElem = document.getElementById("ussdDialogInput");
-      inputElem.value = "";
-
-      if (step === "MAIN_MENU") {
-        dialogText.innerText = `JazzCash\n1:Send Money\n2:Pay Bills\n3:Load & Bundles\n4:ReadyCash\n5:Payments\n6:My Account\n7:Savings & Insurance\n8:Rs 100 JazzLoad\n9:Buy Now Pay Later\n10:Till Payments\n11:Self Service`;
-      } 
-      else if (step === "SEND_MONEY_MENU") {
-        dialogText.innerText = `Send Money\n1:To Mobile Account\n2:To CNIC\n3:To Bank\n4:To Raast/IBAN\n5:My Favorites\n6:Cancel Transaction\n7:Redeem Gift\n00:Main Menu`;
-      }
-      else if (step === "MOBILE_ACCOUNT_MENU") {
-        dialogText.innerText = `1:JazzCash\n2:Easypaisa Bank Limited\n3:Upaisa\n4:SadaPay\n5:NayaPay\n6:Konnect\n7:OPay\n8:OneZapp\n9:Digitt+\n10:YAP\n11:Payvay\n12:Hubpay\n13:Halan Microfinance Bank\n99:Next`;
-      }
-      else if (step === "ENTER_NUMBER") {
-        dialogText.innerText = `Enter Receiver ${tempTransferType} Account Number (11 digits):\n0:Back\n00:Main Menu`;
-      }
-      else if (step === "ENTER_CNIC") {
-        dialogText.innerText = `Enter Receiver CNIC Number (13 digits):\n0:Back\n00:Main Menu`;
-      }
-      else if (step === "ENTER_BANK_ACC") {
-        dialogText.innerText = `Enter Receiver Bank Account Number / IBAN:\n0:Back\n00:Main Menu`;
-      }
-      else if (step === "RAAST_ENTER_NUMBER") {
-        dialogText.innerText = `Enter Receiver Raast ID / IBAN:\n0:Back\n00:Main Menu`;
-      }
-      else if (step === "ENTER_AMOUNT") {
-        dialogText.innerText = `Enter Amount\n0:Back\n00:Main Menu`;
-      }
-      else if (step === "CONFIRMATION_JAZZCASH") {
-        dialogText.innerText = `Send Rs ${tempAmount} to ${tempHolderName}\n${tempAccountNum}. Fee: Rs. 1.00. Funds will be credited within 30 minutes.\nEnter MPIN to confirm.\n0:Back\n00:Main Menu`;
-      }
-      else if (step === "PAY_BILLS_MENU") {
-        dialogText.innerText = `Pay Bills\n1:Electricity\n2:Gas\n3:Water\n4:Telephone\n5:Internet\n6:Mobile Postpaid\n7:My Favorites\n00:Main Menu`;
-      }
-      else if (step === "ELECTRICITY_MENU") {
-        dialogText.innerText = `1:K-Electric\n2:IESCO\n3:LESCO\n4:GEPCO\n5:FESCO\n6:PESCO\n7:QESCO\n8:MEPCO\n9:HESCO\n10:SEPCO\n11:NizamEnergy\n12:HAZECO\n0:Back\n00:Main Menu`;
-      }
-      else if (step === "GAS_MENU") {
-        dialogText.innerText = `1:SSGC\n2:SNGPL\n0:Back\n00:Main Menu`;
-      }
-      else if (step === "BILL_REF_INPUT") {
-        dialogText.innerText = `Enter Consumer / Reference Number:\n0:Back\n00:Main Menu`;
-      }
-      else if (step === "BILL_CONFIRMATION") {
-        dialogText.innerText = `Electricity Bill Payment: Consumer No ${tempBillRef}\nAmount: Rs 1450.00, Fee: Rs 0.00\nEnter MPIN to confirm payment:\n0:Back\n00:Main Menu`;
-      }
-      else if (step === "LOAD_BUNDLES_MENU") {
-        dialogText.innerText = `1:Jazz Load\n2:Telenor Load\n3:Zong Load\n4:Ufone Load\n5:SCO Load\n6:Jazz Bundles\n7:Telenor Bundles\n8:Ufone Bundles\n9:Zong Bundles\n10:SCO Bundles\n11:Mobile Postpaid\n00:Main Menu`;
-      }
-      else if (step === "JAZZ_LOAD_INPUT") {
-        dialogText.innerText = `Enter Jazz Prepaid Number (11 digits):\n0:Back\n00:Main Menu`;
-      }
-      else if (step === "TELENOR_LOAD_INPUT") {
-        dialogText.innerText = `Enter Telenor Number (11 digits):\n0:Back\n00:Main Menu`;
-      }
-      else if (step === "LOAD_AMOUNT_INPUT") {
-        dialogText.innerText = `Enter Amount (Minimum Rs 100):\n0:Back\n00:Main Menu`;
-      }
-      else if (step === "LOAD_CONFIRMATION") {
-        dialogText.innerText = `Mobile Load Rs ${tempAmount} on ${tempAccountNum}\nEnter MPIN to confirm:\n0:Back\n00:Main Menu`;
-      }
-      else if (step === "READY_CASH_MENU") {
-        dialogText.innerText = `ReadyCash\n1:Apply for ReadyCash\n2:Repay ReadyCash\n3:ReadyCash Repayment History\n4:ReadyCash Terms & Conditions\n0:Back\n00:Main Menu`;
-      }
-      else if (step === "READY_CASH_ELIGIBLE") {
-        dialogText.innerText = `You are Eligible for ReadyCash amount upto Rs 3500\nSelect Option:\n1: 3000\n2: 3500\n3: 2500\n4: Enter amount up to 3500.\n0:Back\n00:Main Menu`;
-      }
-      else if (step === "PAYMENTS_MENU") {
-        dialogText.innerText = `1:Government Payment\n2:Traffic Challan\n3:Loan Repayment\n4:Rider Collection\n5:Travel Payment\n6:Education Payment\n7:State Life\n8:Corporate Payment\n9:Donate\n10:Health Payments\n99:Next`;
-      }
-      else if (step === "GOVT_PAYMENTS_MENU") {
-        dialogText.innerText = `1:Excise & Tax payments\n2:Government of Punjab\n3:FBR\n4:NADRA\n5:Punjab Food Authority\n6:Naya Housing Scheme\n7:Evacuee Trust Property Board\n8:KPITB\n9:CRMS\n0:Back\n00:Main Menu`;
-      }
-      else if (step === "MY_ACCOUNT_MENU") {
-        dialogText.innerText = `1:Manage MPIN\n2:Check Balance\n3:Mini Statement\n4:Debit Card\n5:RAAST ID Management\n6:Bank Transfers\n7:Redeem Rewards\n8:Update Email\n9:Change language\n00:Main Menu`;
-      }
-      else if (step === "MANAGE_MPIN_MENU") {
-        dialogText.innerText = `1:Change MPIN\n2:Forgot MPIN\n0:Back\n00:Main Menu`;
-      }
-      else if (step === "CHECK_BALANCE_PIN") {
-        dialogText.innerText = `Enter your 4 digits MPIN. Fee: Rs. 0.58\n0:Back\n00:Main Menu`;
-      }
-      else if (step === "SAVINGS_INSURANCE_MENU") {
-        dialogText.innerText = `Savings & Insurance\n1:Subscribe Savings\n2:Unsubscribe Savings\n3:Insurance\n4:BISP Bachat Scheme\n0:Back\n00:Main Menu`;
-      }
-      else if (step === "BUY_NOW_PAY_LATER") {
-        dialogText.innerText = `You do not have any pending repayments for Buy Now, Pay Later.\n00:Main Menu`;
-      }
-      else if (step === "ENTER_TILL_ID") {
-        dialogText.innerText = `Enter Till ID\n0: Back\n00: Main Menu\n1: Other Raast Options`;
-      }
-      else if (step === "TILL_AMOUNT") {
-        dialogText.innerText = `Payment to ${tempHolderName} (Till ID: ${tempAccountNum})\nEnter Amount:\n0:Back\n00:Main Menu`;
-      }
-      else if (step === "TILL_CONFIRMATION") {
-        dialogText.innerText = `Pay Rs ${parseFloat(tempAmount||0).toFixed(2)} to Till ID: ${tempAccountNum} at ${tempHolderName}\nFee Rs 0.00.\nEnter MPIN to confirm\n0:Back\n00:Main Menu`;
-      }
-      else if (step === "SELF_SERVICE_MENU") {
-        dialogText.innerText = `For Customer Support Dial 4444\n1:Register Complaint\n2:Help\n3:Check Limits\n4:IBAN\n5:CNIC expiry update\n6:Cancel Transaction\n7:Account Closure Request\n00:Main Menu`;
-      }
-      else if (step === "REGISTER_COMPLAINT_MENU") {
-        dialogText.innerText = `Select Complaint Type:\n1:Report Fraudulent/Scam Attempt\n2:Report Fraudulent Transaction\n0:Back\n00:Main Menu`;
-      }
-      else if (step === "ENTER_SCAM_NUM") {
-        dialogText.innerText = `Enter Number (from which call was received)\n0:Back\n00:Main Menu`;
-      }
-      else {
-        dialogText.innerText = `Service execution under process.\n0:Back\n00:Main Menu`;
-      }
-
-      document.getElementById("ussdDialogModal").style.display = "flex";
-      setTimeout(() => { 
-        inputElem.focus(); 
-      }, 100);
-    }
-
-    function handleUssdSubmit() {
-      const inputVal = document.getElementById("ussdDialogInput").value.trim();
-
-      runUssdDelay(() => {
-        if (currentStep === "CUSTOM_USSD_INPUT") {
-          closeUssdDialog();
-          if (activeCustomRule && activeCustomRule.response) {
-            openMsgPromptModal(activeCustomRule.response);
-          }
-          activeCustomRule = null;
-          return;
         }
 
-        if (inputVal === "00") {
-          historyStack = [];
-          showStep("MAIN_MENU");
-          return;
+        /* Screen Switcher Functions */
+        function hideAllScreens() {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         }
 
-        if (inputVal === "0") {
-          if (historyStack.length > 0) {
-            let prevStep = historyStack.pop();
-            showStep(prevStep, true);
-          } else {
-            showStep("MAIN_MENU");
-          }
-          return;
+        function showListScreen() {
+            hideAllScreens();
+            document.getElementById('list-screen').classList.add('active');
         }
 
-        if (currentStep === "MAIN_MENU") {
-          if (inputVal === "1") showStep("SEND_MONEY_MENU");
-          else if (inputVal === "2") showStep("PAY_BILLS_MENU");
-          else if (inputVal === "3") showStep("LOAD_BUNDLES_MENU");
-          else if (inputVal === "4") showStep("READY_CASH_MENU");
-          else if (inputVal === "5") showStep("PAYMENTS_MENU");
-          else if (inputVal === "6") showStep("MY_ACCOUNT_MENU");
-          else if (inputVal === "7") showStep("SAVINGS_INSURANCE_MENU");
-          else if (inputVal === "8") {
-            tempTransferType = "Jazz Load";
-            showStep("JAZZ_LOAD_INPUT");
-          }
-          else if (inputVal === "9") showStep("BUY_NOW_PAY_LATER");
-          else if (inputVal === "10") showStep("ENTER_TILL_ID");
-          else if (inputVal === "11") showStep("SELF_SERVICE_MENU");
-          else showStep("MAIN_MENU");
+        function showNewChatView() {
+            hideAllScreens();
+            document.getElementById('new-chat-screen').classList.add('active');
         }
-        else if (currentStep === "SEND_MONEY_MENU") {
-          if (inputVal === "1") showStep("MOBILE_ACCOUNT_MENU");
-          else if (inputVal === "2") {
-            tempTransferType = "CNIC";
-            showStep("ENTER_CNIC");
-          }
-          else if (inputVal === "3") {
-            tempTransferType = "Bank";
-            showStep("ENTER_BANK_ACC");
-          }
-          else if (inputVal === "4") {
-            tempTransferType = "Raast";
-            showStep("RAAST_ENTER_NUMBER");
-          }
-          else if (inputVal === "6") {
-            closeUssdDialog();
-            openMsgPromptModal("Dear Customer, no active pending transaction found to cancel.");
-          }
-          else showStep("MOBILE_ACCOUNT_MENU");
-        }
-        else if (currentStep === "MOBILE_ACCOUNT_MENU") {
-          if (inputVal === "1") tempTransferType = "JazzCash";
-          else if (inputVal === "2") tempTransferType = "Easypaisa Bank Limited";
-          else if (inputVal === "3") tempTransferType = "Upaisa";
-          else if (inputVal === "4") tempTransferType = "SadaPay";
-          else if (inputVal === "5") tempTransferType = "NayaPay";
-          else if (inputVal === "6") tempTransferType = "Konnect";
-          else tempTransferType = "Mobile Account";
-          showStep("ENTER_NUMBER");
-        }
-        else if (currentStep === "ENTER_NUMBER" || currentStep === "ENTER_CNIC" || currentStep === "ENTER_BANK_ACC" || currentStep === "RAAST_ENTER_NUMBER") {
-          tempAccountNum = inputVal;
-          let matched = accountsDB.find(a => a.number === tempAccountNum);
 
-          if (!matched) {
-            closeUssdDialog();
-            openMsgPromptModal(`Account invalid! Please try again with a valid account number`);
-            return;
-          }
-
-          tempHolderName = matched.name;
-          showStep("ENTER_AMOUNT");
-        }
-        else if (currentStep === "ENTER_AMOUNT") {
-          tempAmount = inputVal;
-          showStep("CONFIRMATION_JAZZCASH");
-        }
-        else if (currentStep === "CONFIRMATION_JAZZCASH") {
-          closeUssdDialog();
-          const requiredAmt = parseFloat(tempAmount) || 0;
-
-          if (userBalance < requiredAmt) {
-            openMsgPromptModal(`Dear Customer, Insufficient balance to complete this transaction. Please recharge your account and try again.`);
-            return;
-          }
-
-          if (inputVal === getActiveRequiredPin()) {
-            setPermanentBalance(userBalance - requiredAmt);
-            addTransactionToStatement(tempTransferType, tempAccountNum, `- Rs ${requiredAmt.toFixed(2)}`);
-
-            const tid = Math.floor(720000000000 + Math.random() * 9000000000);
-            const now = new Date();
-            const yearStr = now.getFullYear();
-            const monthStr = String(now.getMonth() + 1).padStart(2, '0');
-            const dayStr = String(now.getDate()).padStart(2, '0');
-            const timeStr = now.toLocaleTimeString('en-GB', { hour12: false });
-
-            let officialSmsMsg = "";
-            const currentOwner = getActiveOwnerName();
-
-            if (tempTransferType === "Raast" || tempTransferType === "Bank") {
-              const maskedIBAN = maskNumber(tempAccountNum);
-              officialSmsMsg = `Dear ${currentOwner}, an amount of Rs. ${requiredAmt.toFixed(2)} has been successfully sent to ${tempHolderName} of IBAN No: ${maskedIBAN} on ${yearStr}-${monthStr}-${dayStr} at ${timeStr}. TID:${tid} via RAAST`;
-            } 
-            else if (tempTransferType === "JazzCash") {
-              const maskedAcc = maskNumber(tempAccountNum);
-              officialSmsMsg = `Rs ${requiredAmt.toFixed(2)} sent to ${tempHolderName}, A/C: ${maskedAcc} on ${dayStr}/${monthStr}/${yearStr} at ${timeStr}. Fee: Rs 1.00, TID:${tid} via JazzCash`;
-            } 
-            else {
-              const maskedAcc = maskNumber(tempAccountNum);
-              officialSmsMsg = `Rs ${requiredAmt.toFixed(2)} sent to ${tempHolderName}, A/C: ${maskedAcc} via ${tempTransferType} on ${dayStr}/${monthStr}/${yearStr} at ${timeStr}. Fee: Rs 0.00, TID:${tid}`;
-            }
-
-            openMsgPromptModal(`Dear Customer, Rs ${requiredAmt.toFixed(2)} has been deducted from your account. It will be transferred to beneficiary account within 30 minutes.`);
-            pushSmsToFirebase("8558", officialSmsMsg);
-          } else {
-            const wrongPinMsg = `Dear User, MPIN entered is not correct. If you do not remember the MPIN please dial *786*6*1*2# to reset your MPIN.`;
-            openMsgPromptModal(wrongPinMsg);
-            pushSmsToFirebase("8558", wrongPinMsg);
-          }
-        }
-        else if (currentStep === "PAY_BILLS_MENU") {
-          if (inputVal === "1") showStep("ELECTRICITY_MENU");
-          else if (inputVal === "2") showStep("GAS_MENU");
-          else showStep("BILL_REF_INPUT");
-        }
-        else if (currentStep === "ELECTRICITY_MENU" || currentStep === "GAS_MENU") {
-          showStep("BILL_REF_INPUT");
-        }
-        else if (currentStep === "BILL_REF_INPUT") {
-          tempBillRef = inputVal;
-          showStep("BILL_CONFIRMATION");
-        }
-        else if (currentStep === "BILL_CONFIRMATION") {
-          closeUssdDialog();
-          const requiredAmt = 1450.00;
-          if (userBalance < requiredAmt) {
-            openMsgPromptModal(`Dear Customer, Insufficient balance to complete this transaction.`);
-            return;
-          }
-
-          if (inputVal === getActiveRequiredPin()) {
-            setPermanentBalance(userBalance - requiredAmt);
-            addTransactionToStatement("Electricity Bill", tempBillRef, "- Rs 1450.00");
-            const tid = Math.floor(819400000000 + Math.random() * 90000000);
-            const msg = `Bill Payment of Rs 1450.00 successful for Consumer ID ${tempBillRef}. Fee Rs 0.00, TID: ${tid}. Remaining Bal: Rs ${userBalance.toFixed(2)}.`;
-            openMsgPromptModal(msg);
-            pushSmsToFirebase("8558", msg);
-          } else {
-            openMsgPromptModal(`Dear User, MPIN entered is not correct.`);
-          }
-        }
-        else if (currentStep === "LOAD_BUNDLES_MENU") {
-          if (inputVal === "1") showStep("JAZZ_LOAD_INPUT");
-          else if (inputVal === "2") showStep("TELENOR_LOAD_INPUT");
-          else showStep("JAZZ_LOAD_INPUT");
-        }
-        else if (currentStep === "JAZZ_LOAD_INPUT" || currentStep === "TELENOR_LOAD_INPUT") {
-          tempAccountNum = inputVal;
-          showStep("LOAD_AMOUNT_INPUT");
-        }
-        else if (currentStep === "LOAD_AMOUNT_INPUT") {
-          tempAmount = inputVal;
-          showStep("LOAD_CONFIRMATION");
-        }
-        else if (currentStep === "LOAD_CONFIRMATION") {
-          closeUssdDialog();
-          const requiredAmt = parseFloat(tempAmount) || 0;
-          if (userBalance < requiredAmt) {
-            openMsgPromptModal(`Dear Customer, Insufficient balance to complete this transaction.`);
-            return;
-          }
-
-          if (inputVal === getActiveRequiredPin()) {
-            setPermanentBalance(userBalance - requiredAmt);
-            addTransactionToStatement("Mobile Load", tempAccountNum, `- Rs ${requiredAmt.toFixed(2)}`);
-            const tid = Math.floor(919400000000 + Math.random() * 90000000);
-            const msg = `Mobile Load of Rs ${requiredAmt.toFixed(2)} to ${tempAccountNum} successful. TID: ${tid}. Remaining Balance: Rs ${userBalance.toFixed(2)}.`;
-            openMsgPromptModal(msg);
-            pushSmsToFirebase("8558", msg);
-          } else {
-            openMsgPromptModal(`Dear User, MPIN entered is not correct.`);
-          }
-        }
-        else if (currentStep === "READY_CASH_MENU") {
-          if (inputVal === "1") showStep("READY_CASH_ELIGIBLE");
-          else if (inputVal === "2") {
-            closeUssdDialog();
-            if (activeLoan > 0) {
-              setPermanentBalance(userBalance - activeLoan);
-              openMsgPromptModal(`Dear Customer, Rs ${activeLoan} ReadyCash loan repaid successfully.`);
-              activeLoan = 0;
-            } else {
-              openMsgPromptModal("Dear Customer, currently you do not have any outstanding loan to repay. Dial *786*4*1# to get ReadyCash Loan");
-            }
-          } else {
-            closeUssdDialog();
-            openMsgPromptModal("ReadyCash Option processed.");
-          }
-        }
-        else if (currentStep === "READY_CASH_ELIGIBLE") {
-          closeUssdDialog();
-          let loanAmt = inputVal === "1" ? 3000 : inputVal === "2" ? 3500 : inputVal === "3" ? 2500 : 3500;
-          activeLoan = loanAmt;
-          setPermanentBalance(userBalance + loanAmt);
-          addTransactionToStatement("ReadyCash", "Self A/C", `+ Rs ${loanAmt}.00`);
-          const msg = `Dear Customer, Rs ${loanAmt}.00 ReadyCash loan credited successfully. Available Balance: Rs ${userBalance.toFixed(2)}.`;
-          openMsgPromptModal(msg);
-          pushSmsToFirebase("8558", msg);
-        }
-        else if (currentStep === "PAYMENTS_MENU") {
-          if (inputVal === "1") showStep("GOVT_PAYMENTS_MENU");
-          else {
-            closeUssdDialog();
-            openMsgPromptModal("Selected payment category service under process.");
-          }
-        }
-        else if (currentStep === "GOVT_PAYMENTS_MENU") {
-          closeUssdDialog();
-          openMsgPromptModal("Enter Challan / PSID Number:");
-        }
-        else if (currentStep === "MY_ACCOUNT_MENU") {
-          if (inputVal === "1") showStep("MANAGE_MPIN_MENU");
-          else if (inputVal === "2") showStep("CHECK_BALANCE_PIN");
-          else if (inputVal === "3") displayMiniStatement();
-          else showStep("MY_ACCOUNT_MENU");
-        }
-        else if (currentStep === "MANAGE_MPIN_MENU") {
-          closeUssdDialog();
-          openMsgPromptModal("MPIN Management System: Enter Old 4 Digit MPIN.");
-        }
-        else if (currentStep === "CHECK_BALANCE_PIN") {
-          closeUssdDialog();
-          if (inputVal === getActiveRequiredPin()) {
-            setPermanentBalance(userBalance - 0.58);
-            addTransactionToStatement("Fee", "Balance Inquiry", "- Rs 0.58");
-
-            const now = new Date();
-            const dateStr = now.toLocaleDateString('en-GB');
-            const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-
-            const balMsg = `Rs ${userBalance.toFixed(2)} is your available balance on JazzCash Mobile A/C: ${getActiveOwnerName()} Fee: 0.58, as of ${dateStr} at ${timeStr}.`;
-            openMsgPromptModal(balMsg);
-            pushSmsToFirebase("8558", balMsg);
-          } else {
-            const wrongPinMsg = `Dear User, MPIN entered is not correct. If you do not remember the MPIN please dial *786*6*1*2# to reset or call Helpline 4444. Thank you`;
-            openMsgPromptModal(wrongPinMsg);
-            pushSmsToFirebase("8558", wrongPinMsg);
-          }
-        }
-        else if (currentStep === "ENTER_TILL_ID") {
-          tempAccountNum = inputVal;
-          let matchedTill = tillIdsDB.find(t => t.id === tempAccountNum);
-          if (!matchedTill) {
-            closeUssdDialog();
-            openMsgPromptModal(`Invalid Till ID`);
-            return;
-          }
-          tempHolderName = matchedTill.name;
-          showStep("TILL_AMOUNT");
-        }
-        else if (currentStep === "TILL_AMOUNT") {
-          tempAmount = inputVal;
-          showStep("TILL_CONFIRMATION");
-        }
-        else if (currentStep === "TILL_CONFIRMATION") {
-          closeUssdDialog();
-          const requiredAmt = parseFloat(tempAmount) || 0;
-          if (userBalance < requiredAmt) {
-            openMsgPromptModal(`Dear Customer, Insufficient balance to complete this transaction.`);
-            return;
-          }
-
-          if (inputVal === getActiveRequiredPin()) {
-            setPermanentBalance(userBalance - requiredAmt);
-            addTransactionToStatement("Till Payment", tempAccountNum, `- Rs ${requiredAmt.toFixed(2)}`);
-
-            const tid = Math.floor(720000000000 + Math.random() * 9000000000);
-            const now = new Date();
-            const yearStr = now.getFullYear();
-            const monthStr = String(now.getMonth() + 1).padStart(2, '0');
-            const dayStr = String(now.getDate()).padStart(2, '0');
-            const timeStr = now.toLocaleTimeString('en-GB', { hour12: false });
+        function openChat(name, text) {
+            hideAllScreens();
+            document.getElementById('chat-screen').classList.add('active');
             
-            const officialTillSms = `Rs ${requiredAmt.toFixed(2)} paid to ${tempHolderName}, Till ID: ${tempAccountNum} on ${dayStr}/${monthStr}/${yearStr} at ${timeStr}. Fee 0.00, TID: ${tid} via QR Code.`;
+            document.getElementById('chat-title-text').innerText = name;
             
-            openMsgPromptModal(`Payment Successful!\n${officialTillSms}`);
-            pushSmsToFirebase("8558", officialTillSms);
-          } else {
-            openMsgPromptModal(`Dear User, MPIN entered is not correct.`);
-          }
-        }
-        else if (currentStep === "SELF_SERVICE_MENU") {
-          if (inputVal === "1") showStep("REGISTER_COMPLAINT_MENU");
-          else {
-            closeUssdDialog();
-            openMsgPromptModal("Self Service Request Received. Please check SMS.");
-          }
-        }
-        else if (currentStep === "REGISTER_COMPLAINT_MENU") {
-          showStep("ENTER_SCAM_NUM");
-        }
-        else if (currentStep === "ENTER_SCAM_NUM") {
-          closeUssdDialog();
-          openMsgPromptModal(`Complaint registered successfully for number ${inputVal}. Ticket ID: 98124.`);
-        }
-      });
-    }
+            const chatBody = document.getElementById('chat-conversation-body');
+            const options = { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' };
+            const today = new Date();
+            const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-    function closeUssdDialog() {
-      document.getElementById("ussdDialogModal").style.display = "none";
-      onInputFocus(false);
-    }
+            chatBody.innerHTML = `
+                <div class="date-divider">Today • ${today.toLocaleDateString('en-US', options)}</div>
+                <div class="message-bubble received">
+                    <span>${text}</span>
+                    <div class="timestamp">${currentTime}</div>
+                </div>
+            `;
+        }
 
-    function openMsgPromptModal(text) {
-      document.getElementById("msgPromptText").innerText = text;
-      document.getElementById("msgPromptModal").style.display = "flex";
-    }
+        function openAccountMenu() {
+            document.getElementById('account-modal').style.display = 'flex';
+        }
 
-    function closeMsgPromptModal() {
-      document.getElementById("msgPromptModal").style.display = "none";
-    }
-
-    function createNewContact() {
-      alert("Create New Contact Option Clicked");
-    }
-  </script>
+        function closeAccountMenu(e) {
+            document.getElementById('account-modal').style.display = 'none';
+        }
+    </script>
 </body>
 </html>
