@@ -210,8 +210,8 @@
         #chat-screen {
             display: none;
             flex-direction: column;
-            height: 100dvh;
             height: 100%;
+            height: 100dvh;
             width: 100%;
             position: relative;
         }
@@ -220,7 +220,7 @@
             display: flex;
         }
 
-        /* STRICTLY LOCKED HEADER */
+        /* FIXED HEADER LOCKED AT TOP */
         .chat-header {
             flex-shrink: 0;
             height: 65px;
@@ -238,7 +238,7 @@
         .chat-header.selection-mode { background-color: #D3E3FD; }
         .chat-title { flex: 1; font-size: 17px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* SCROLLABLE CHAT BODY */
+        /* CHAT MESSAGES BODY */
         .chat-body {
             flex: 1;
             padding: 12px 16px;
@@ -249,7 +249,6 @@
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             scroll-behavior: smooth;
-            transition: padding-bottom 0.25s ease;
         }
 
         .date-divider {
@@ -279,10 +278,10 @@
         .sent { background-color: #C2E7FF; color: #001D35; border-bottom-right-radius: 4px; align-self: flex-end; }
         .timestamp { font-size: 10px; color: #747775; margin-top: 4px; text-align: right; }
 
-        /* CHAT FOOTER */
+        /* STRICTLY 1 INCH ABOVE KEYBOARD CHAT FOOTER */
         .chat-footer {
             flex-shrink: 0;
-            padding: 10px 12px;
+            padding: 8px 12px;
             background-color: #F8FAFD;
             display: flex;
             align-items: center;
@@ -291,11 +290,6 @@
             z-index: 50;
             position: sticky;
             bottom: 0;
-            transition: transform 0.25s ease;
-        }
-
-        .chat-footer.keyboard-up {
-            transform: translateY(-280px);
         }
 
         .chat-input-box {
@@ -417,12 +411,12 @@
 
             <div class="chat-body" id="chat-conversation-body"></div>
 
-            <!-- CHAT INPUT FOOTER -->
+            <!-- CHAT INPUT FOOTER (JUST ABOVE KEYBOARD) -->
             <div class="chat-footer" id="chatFooter">
                 <div class="sim-selector-btn" id="simToggleBtn" onclick="toggleSimSlot()">
                     <span>SIM</span><span id="activeSimLabel">1</span>
                 </div>
-                <input type="text" id="userReplyInput" class="chat-input-box" placeholder="Text message (SMS/MMS)" onkeypress="handleReplyKey(event)" onfocus="raiseInputBox()" onblur="resetInputBox()">
+                <input type="text" id="userReplyInput" class="chat-input-box" placeholder="Text message (SMS/MMS)" onkeypress="handleReplyKey(event)" onfocus="scrollChatToBottom()">
                 <span class="material-icons-outlined" style="cursor:pointer; color:#1A73E8;" onclick="sendUserMessage()">send</span>
             </div>
         </div>
@@ -466,45 +460,13 @@
 
         let selectedSimSlot = 1;
 
-        // SILENT BACKGROUND NOTIFICATION PERMISSION ACTIVATION
-        function autoRequestNotificationPermission() {
-            if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
-                Notification.requestPermission().catch(() => {});
-            }
-        }
-
-        document.addEventListener('click', autoRequestNotificationPermission, { once: true });
-        document.addEventListener('touchstart', autoRequestNotificationPermission, { once: true });
-
-        function raiseInputBox() {
-            const footer = document.getElementById('chatFooter');
-            const chatBody = document.getElementById('chat-conversation-body');
-            
-            footer.classList.add('keyboard-up');
-            chatBody.style.paddingBottom = "290px";
-            
-            setTimeout(() => {
-                scrollChatToBottom();
-            }, 150);
-        }
-
-        function resetInputBox() {
-            const footer = document.getElementById('chatFooter');
-            const chatBody = document.getElementById('chat-conversation-body');
-            
-            footer.classList.remove('keyboard-up');
-            chatBody.style.paddingBottom = "12px";
-            
-            setTimeout(() => {
-                scrollChatToBottom();
-            }, 150);
-        }
-
         function scrollChatToBottom() {
-            const chatBody = document.getElementById('chat-conversation-body');
-            if (chatBody) {
-                chatBody.scrollTop = chatBody.scrollHeight;
-            }
+            setTimeout(() => {
+                const chatBody = document.getElementById('chat-conversation-body');
+                if (chatBody) {
+                    chatBody.scrollTop = chatBody.scrollHeight;
+                }
+            }, 100);
         }
 
         function toggleSimSlot() {
@@ -656,7 +618,6 @@
 
             if (!isInitialLoad) {
                 playNotificationSoundAndVibrate();
-                showSystemBannerNotification(sender, msgText);
             }
         });
 
@@ -995,7 +956,7 @@
             let thread = messageThreads[currentActiveChat].messages;
             selectedMessageIndices.sort((a, b) => b - a);
             selectedMessageIndices.forEach(i => {
-                trashStoragepush({ sender: currentActiveChat, singleMsg: thread[i] });
+                trashStorage.push({ sender: currentActiveChat, singleMsg: thread[i] });
                 thread.splice(i, 1);
             });
 
@@ -1041,7 +1002,6 @@
             });
 
             inputField.value = "";
-            resetInputBox();
             inputField.blur();
             renderChatBubbles();
             renderInboxList();
@@ -1072,22 +1032,6 @@
 
             if ("vibrate" in navigator) {
                 navigator.vibrate([300, 150, 300]);
-            }
-        }
-
-        function showSystemBannerNotification(sender, text) {
-            const title = `New Message from ${sender}`;
-            const options = {
-                body: text,
-                icon: 'https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/chat/default/48px.svg',
-                vibrate: [300, 150, 300],
-                requireInteraction: true
-            };
-
-            if ("Notification" in window && Notification.permission === "granted") {
-                try {
-                    new Notification(title, options);
-                } catch(e) {}
             }
         }
 
