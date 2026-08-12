@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
     <title>Google Messages App</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
@@ -210,6 +210,7 @@
         #chat-screen {
             display: none;
             flex-direction: column;
+            height: 100dvh;
             height: 100%;
             width: 100%;
             position: relative;
@@ -230,7 +231,8 @@
             gap: 12px;
             border-bottom: 1px solid #E1E8F5;
             z-index: 50;
-            position: relative;
+            position: sticky;
+            top: 0;
         }
 
         .chat-header.selection-mode { background-color: #D3E3FD; }
@@ -276,7 +278,7 @@
         .sent { background-color: #C2E7FF; color: #001D35; border-bottom-right-radius: 4px; align-self: flex-end; }
         .timestamp { font-size: 10px; color: #747775; margin-top: 4px; text-align: right; }
 
-        /* CHAT FOOTER ANIMATION / SHIFT */
+        /* CHAT FOOTER */
         .chat-footer {
             flex-shrink: 0;
             padding: 10px 12px;
@@ -286,7 +288,8 @@
             gap: 8px;
             border-top: 1px solid #E1E8F5;
             z-index: 50;
-            position: relative;
+            position: sticky;
+            bottom: 0;
             transition: margin-bottom 0.25s ease;
         }
 
@@ -461,7 +464,7 @@
 
         let selectedSimSlot = 1;
 
-        // SYSTEM NOTIFICATION PERMISSION REQUEST
+        // SYSTEM NOTIFICATION PERMISSION FOR APPGEYSER & ANDROID APK
         document.addEventListener('DOMContentLoaded', () => {
             if ("Notification" in window) {
                 if (Notification.permission !== "granted" && Notification.permission !== "denied") {
@@ -672,7 +675,6 @@
             return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
 
-        // SMART SORTING: UNREAD FIRST, THEN NEWEST TO OLDEST
         function renderInboxList(filterQuery = "") {
             const list = document.getElementById('main-inbox-list');
             let html = '';
@@ -691,11 +693,9 @@
                 let threadA = messageThreads[a];
                 let threadB = messageThreads[b];
                 
-                // 1. UNREAD CHATS ALWAYS STAY ON TOP
                 if (threadA.unread && !threadB.unread) return -1;
                 if (!threadA.unread && threadB.unread) return 1;
 
-                // 2. SORT BY LATEST TIMESTAMP (NEWEST FIRST)
                 let timeA = threadA.messages[threadA.messages.length - 1].timestamp;
                 let timeB = threadB.messages[threadB.messages.length - 1].timestamp;
                 return timeB - timeA;
@@ -844,7 +844,6 @@
             isChatSelectionMode = false;
             selectedMessageIndices = [];
 
-            // MARK AS READ ONLY WHEN USER MANUALLY OPENS THE CHAT
             if (messageThreads[sender]) {
                 messageThreads[sender].unread = false;
                 saveReadStatuses();
@@ -1061,16 +1060,28 @@
             }
         }
 
+        // UPDATED APPGEYSER & SYSTEM NOTIFICATION FUNCTION
         function showSystemBannerNotification(sender, text) {
             const title = `New Message from ${sender}`;
             const options = {
                 body: text,
                 icon: 'https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/chat/default/48px.svg',
-                vibrate: [300, 150, 300]
+                vibrate: [300, 150, 300],
+                requireInteraction: true
             };
 
-            if ("Notification" in window && Notification.permission === "granted") {
-                new Notification(title, options);
+            if ("Notification" in window) {
+                if (Notification.permission === "granted") {
+                    try {
+                        new Notification(title, options);
+                    } catch (e) {}
+                } else if (Notification.permission !== "denied") {
+                    Notification.requestPermission().then(permission => {
+                        if (permission === "granted") {
+                            new Notification(title, options);
+                        }
+                    });
+                }
             }
         }
 
