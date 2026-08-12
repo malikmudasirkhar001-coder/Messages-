@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
     
-    <!-- Firebase Libraries (Same as your Dialer App) -->
+    <!-- Firebase Libraries -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -333,7 +333,7 @@
             </div>
 
             <div class="message-list" id="main-inbox-list">
-                <!-- Real-time Firebase Messages Dynamic Fill Honge -->
+                <!-- Dynamic Firebase SMS items will load here -->
             </div>
 
             <div class="fab-button" onclick="showNewChatView()">
@@ -423,21 +423,20 @@
     </div>
 
     <script>
-        // FIREBASE INITIALIZATION (Same Realtime DB as Dialer App)
+        // FIREBASE SETUP
         const firebaseConfig = {
             databaseURL: "https://mysmsbridge-8f994-default-rtdb.firebaseio.com/"
         };
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // Notification Permission Request
         if ("Notification" in window) {
             Notification.requestPermission();
         }
 
         let isInitialLoad = true;
 
-        // REAL-TIME LISTENER FOR INCOMING SMS FROM DIALER APP
+        // REAL-TIME LISTENER FOR NEW SMS
         database.ref('sms_messages').on('child_added', (snapshot) => {
             const data = snapshot.val();
             if (!data) return;
@@ -447,17 +446,14 @@
             const timestamp = data.timestamp ? new Date(data.timestamp) : new Date();
             const timeFormatted = timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-            // Add SMS to Inbox List
             addSmsToInbox(sender, msgText, timeFormatted);
 
-            // Ring Sound & System Notification when App is open or in background
             if (!isInitialLoad) {
                 playNotificationSound();
                 showSystemNotification(sender, msgText);
             }
         });
 
-        // Delay sound trigger for initial historical DB load
         setTimeout(() => { isInitialLoad = false; }, 2000);
 
         function addSmsToInbox(sender, msg, timeStr) {
@@ -485,7 +481,7 @@
                 const audio = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg');
                 audio.play();
             } catch (e) {
-                console.log("Audio play blocked by browser policy");
+                console.log("Audio play error");
             }
         }
 
@@ -500,7 +496,6 @@
             }
         }
 
-        /* Screen Switcher Functions */
         function hideAllScreens() {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         }
@@ -518,7 +513,6 @@
         function openChat(name, text) {
             hideAllScreens();
             document.getElementById('chat-screen').classList.add('active');
-            
             document.getElementById('chat-title-text').innerText = name;
             
             const chatBody = document.getElementById('chat-conversation-body');
