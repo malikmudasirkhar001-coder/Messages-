@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Google Messages App</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
@@ -21,9 +21,15 @@
             user-select: none;
         }
 
-        body {
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
             background-color: #F1F4F9;
             color: #1F1F1F;
+        }
+
+        body {
             display: flex;
             justify-content: center;
         }
@@ -32,19 +38,28 @@
             width: 100%;
             max-width: 412px;
             background-color: #F1F4F9;
-            min-height: 100vh;
+            height: 100vh;
+            height: 100dvh;
             position: relative;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
         .screen {
             display: none;
             flex-direction: column;
-            min-height: 100vh;
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: #F1F4F9;
         }
 
         .screen.active {
             display: flex;
+            z-index: 1;
         }
 
         /* Top Header Search Bar */
@@ -54,6 +69,7 @@
             top: 0;
             background-color: #F1F4F9;
             z-index: 10;
+            flex-shrink: 0;
         }
 
         .search-bar {
@@ -71,7 +87,15 @@
         }
 
         .search-icon { color: #444746; font-size: 24px; }
-        .search-text { flex: 1; font-size: 16px; color: #444746; }
+        .search-input-field {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 16px;
+            color: #1F1F1F;
+            user-select: text;
+        }
 
         .profile-avatar {
             width: 32px;
@@ -91,7 +115,9 @@
         .message-list {
             display: flex;
             flex-direction: column;
-            padding-bottom: 90px;
+            overflow-y: auto;
+            flex: 1;
+            padding-bottom: 80px;
         }
 
         .message-item {
@@ -123,7 +149,8 @@
         .bg-teal { background-color: #00897B; }
         .bg-green { background-color: #1E8E3E; }
         .bg-orange { background-color: #E37400; }
-        .bg-yellow { background-color: #F29900; }
+        .bg-purple { background-color: #8E24AA; }
+        .bg-red { background-color: #D93025; }
 
         .message-content { flex: 1; min-width: 0; }
         .message-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2px; }
@@ -148,9 +175,9 @@
         }
 
         .fab-button {
-            position: fixed;
+            position: absolute;
             bottom: 24px;
-            right: calc(50% - 190px + 24px);
+            right: 24px;
             background-color: #C2E7FF;
             color: #001D35;
             padding: 16px 20px;
@@ -165,13 +192,9 @@
             z-index: 5;
         }
 
-        @media (max-width: 412px) {
-            .fab-button { right: 24px; }
-        }
-
         /* New Chat Screen Styles */
         .new-chat-header {
-            display: flex; align-items: center; padding: 16px; gap: 20px;
+            display: flex; align-items: center; padding: 16px; gap: 20px; flex-shrink: 0;
         }
         .new-chat-header h2 { font-size: 20px; font-weight: 400; color: #1F1F1F; }
         .new-chat-body { padding: 0 16px; display: flex; flex-direction: column; gap: 12px; }
@@ -181,49 +204,109 @@
         .to-input-row { display: flex; align-items: center; gap: 8px; }
         .to-label { color: #444746; font-size: 16px; }
         .to-input { border: none; outline: none; font-size: 16px; width: 100%; background: transparent; user-select: text; }
-        
-        .create-group-btn {
-            background-color: #D8E7D7; color: #111D13; border-radius: 24px; padding: 14px;
-            display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; font-weight: 500; cursor: pointer;
+
+        /* Sticky Chat Header and Keyboard Adjusting Footer */
+        .chat-header {
+            position: sticky;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            background-color: #F8FAFD;
+            gap: 12px;
+            border-bottom: 1px solid #E1E8F5;
+            flex-shrink: 0;
         }
 
-        /* Chat Screen Styling */
-        .chat-header {
-            display: flex; align-items: center; padding: 12px;
-            background-color: #F8FAFD; gap: 12px; border-bottom: 1px solid #E1E8F5;
-        }
         .chat-header.selection-mode { background-color: #D3E3FD; }
-        .chat-title { flex: 1; font-size: 18px; font-weight: 500; }
+        .chat-title { flex: 1; font-size: 18px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
         .chat-body {
-            flex: 1; padding: 16px; display: flex; flex-direction: column; gap: 12px; background-color: #FFFFFF; overflow-y: auto;
+            flex: 1;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background-color: #FFFFFF;
+            overflow-y: auto;
         }
+
         .date-divider {
-            align-self: center; background-color: #E9EEF6; color: #444746;
-            padding: 4px 12px; border-radius: 12px; font-size: 12px; margin: 12px 0;
+            align-self: center;
+            background-color: #E9EEF6;
+            color: #444746;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin: 8px 0;
+            text-align: center;
         }
+
         .message-bubble {
-            max-width: 85%; padding: 12px 16px; border-radius: 18px; font-size: 14px; line-height: 1.4; word-break: break-word; cursor: pointer; position: relative;
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.4;
+            word-break: break-word;
+            cursor: pointer;
+            position: relative;
         }
+
         .message-bubble.selected { background-color: #C2E7FF !important; border: 2px solid #001D35; }
         .received { background-color: #E9EEF6; color: #1F1F1F; border-bottom-left-radius: 4px; align-self: flex-start; }
         .sent { background-color: #C2E7FF; color: #001D35; border-bottom-right-radius: 4px; align-self: flex-end; }
         .timestamp { font-size: 10px; color: #747775; margin-top: 4px; text-align: right; }
 
         .chat-footer {
-            padding: 8px 12px; background-color: #F8FAFD; display: flex; align-items: center; gap: 8px;
+            padding: 8px 12px;
+            background-color: #F8FAFD;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: sticky;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 20;
+            border-top: 1px solid #E1E8F5;
+            flex-shrink: 0;
         }
+
         .chat-input-box {
-            flex: 1; background-color: #E9EEF6; border-radius: 24px; padding: 10px 16px;
-            border: none; outline: none; font-size: 15px; user-select: text;
+            flex: 1;
+            background-color: #E9EEF6;
+            border-radius: 24px;
+            padding: 10px 16px;
+            border: none;
+            outline: none;
+            font-size: 15px;
+            user-select: text;
         }
+
+        .sim-selector-btn {
+            background: #2cc673;
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 6px 10px;
+            border-radius: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
         .back-btn { cursor: pointer; padding: 4px; }
-        
         .action-actions-group { display: flex; gap: 16px; align-items: center; }
 
-        /* Google Account Menu Modal */
+        /* Modals */
         .modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0, 0, 0, 0.4); z-index: 20; justify-content: center; align-items: center;
+            background: rgba(0, 0, 0, 0.4); z-index: 50; justify-content: center; align-items: center;
         }
         .account-card {
             width: 90%; max-width: 360px; background-color: #F2F5F9; border-radius: 28px;
@@ -241,6 +324,10 @@
         .menu-list { background-color: white; border-radius: 16px; overflow: hidden; margin-top: 12px; }
         .menu-item { display: flex; align-items: center; gap: 16px; padding: 14px 16px; font-size: 14px; color: #1F1F1F; cursor: pointer; }
         .menu-item:hover { background-color: #F2F5F9; }
+
+        .modal-list-content {
+            max-height: 250px; overflow-y: auto; margin-top: 10px; border-top: 1px solid #ddd; padding-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -251,7 +338,7 @@
             <div class="search-bar-container">
                 <div class="search-bar" id="inboxSearchBar">
                     <span id="inboxBackOrSearchIcon" class="material-icons-outlined search-icon" onclick="exitInboxSelection()">search</span>
-                    <span id="inboxSearchText" class="search-text">Search messages</span>
+                    <input type="text" id="searchInput" class="search-input-field" placeholder="Search messages" oninput="handleSearch(this.value)" />
                     <div id="inboxNormalAvatar" class="profile-avatar" onclick="openAccountMenu()">a</div>
                     <div id="inboxSelectionActions" class="action-actions-group" style="display:none;">
                         <span class="material-icons-outlined" style="cursor:pointer;" onclick="archiveSelectedChats()" title="Archive">archive</span>
@@ -282,16 +369,12 @@
                         <input type="text" id="newChatInput" class="to-input" placeholder="Type name, phone number, or email" autofocus onkeypress="handleNewChatKey(event)">
                     </div>
                 </div>
-
-                <div class="create-group-btn">
-                    <span class="material-icons-outlined">group_add</span>
-                    <span>Create group</span>
-                </div>
             </div>
         </div>
 
         <!-- 3. CHAT THREAD SCREEN -->
         <div id="chat-screen" class="screen">
+            <!-- STICKY HEADER -->
             <div class="chat-header" id="chatHeaderBar">
                 <span class="material-icons-outlined back-btn" onclick="exitOrBack()">arrow_back</span>
                 <span class="chat-title" id="chat-title-text">Sender</span>
@@ -305,14 +388,15 @@
                 </div>
             </div>
 
-            <div class="chat-body" id="chat-conversation-body">
-                <div class="date-divider">Today</div>
-            </div>
+            <div class="chat-body" id="chat-conversation-body"></div>
 
-            <div class="chat-footer">
-                <span class="material-icons-outlined">add_circle_outline</span>
-                <input type="text" id="userReplyInput" class="chat-input-box" placeholder="Text message (SMS/MMS)" onkeypress="handleReplyKey(event)">
-                <span class="material-icons-outlined" style="cursor:pointer;" onclick="sendUserMessage()">send</span>
+            <!-- KEYBOARD & SIM ADJUSTING FOOTER -->
+            <div class="chat-footer" id="chatFooter">
+                <div class="sim-selector-btn" id="simToggleBtn" onclick="toggleSimSlot()">
+                    <span>SIM</span><span id="activeSimLabel">1</span>
+                </div>
+                <input type="text" id="userReplyInput" class="chat-input-box" placeholder="Text message (SMS/MMS)" onkeypress="handleReplyKey(event)" onfocus="scrollChatToBottom()">
+                <span class="material-icons-outlined" style="cursor:pointer; color:#1A73E8;" onclick="sendUserMessage()">send</span>
             </div>
         </div>
     </div>
@@ -321,22 +405,26 @@
     <div id="account-modal" class="modal-overlay" onclick="closeAccountMenu(event)">
         <div class="account-card" onclick="event.stopPropagation()">
             <div class="acc-profile">
-                <div class="acc-avatar">a</div>
-                <div style="font-weight: 500; font-size: 16px;">Hi, ayesha!</div>
+                <div class="acc-avatar">A</div>
+                <div style="font-weight: 500; font-size: 16px;">Hi, User!</div>
                 <button class="manage-btn">Manage your Google Account</button>
             </div>
 
             <div class="menu-list">
                 <div class="menu-item"><span class="material-icons-outlined">person_outline</span> Your profile</div>
-                <div class="menu-item" onclick="alert('No archived chats found.')"><span class="material-icons-outlined">archive</span> Archived</div>
-                <div class="menu-item"><span class="material-icons-outlined">delete_outline</span> Trash</div>
-                <div class="menu-item"><span class="material-icons-outlined">gpp_maybe</span> Spam & blocked</div>
-                <div class="menu-item"><span class="material-icons-outlined">done_all</span> Mark all as read</div>
-                <div class="menu-item"><span class="material-icons-outlined">phonelink</span> Device pairing</div>
-                <div class="menu-item"><span class="material-icons-outlined">security</span> Your data in Messages</div>
-                <div class="menu-item"><span class="material-icons-outlined">settings</span> Messages settings</div>
-                <div class="menu-item"><span class="material-icons-outlined">help_outline</span> Help & feedback</div>
+                <div class="menu-item" onclick="showArchivedModal()"><span class="material-icons-outlined">archive</span> Archived</div>
+                <div class="menu-item" onclick="showTrashModal()"><span class="material-icons-outlined">delete_outline</span> Trash</div>
+                <div class="menu-item" onclick="markAllAsRead()"><span class="material-icons-outlined">done_all</span> Mark all as read</div>
             </div>
+        </div>
+    </div>
+
+    <!-- 5. ARCHIVED & TRASH MODAL -->
+    <div id="secondary-modal" class="modal-overlay" onclick="closeSecondaryModal()">
+        <div class="account-card" onclick="event.stopPropagation()">
+            <h3 id="secondaryModalTitle" style="margin-bottom:10px; color:#1F1F1F;">Archived Chats</h3>
+            <div class="modal-list-content" id="secondaryModalList"></div>
+            <button class="manage-btn" style="width:100%; margin-top:15px;" onclick="closeSecondaryModal()">Close</button>
         </div>
     </div>
 
@@ -347,22 +435,97 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        if ("Notification" in window) {
-            Notification.requestPermission();
+        let swRegistration = null;
+        let selectedSimSlot = 1;
+
+        function toggleSimSlot() {
+            selectedSimSlot = selectedSimSlot === 1 ? 2 : 1;
+            document.getElementById('activeSimLabel').innerText = selectedSimSlot;
         }
 
+        // Handle Back Gesture to Stay Inside App Screens
+        window.addEventListener('popstate', function(event) {
+            const chatScreen = document.getElementById('chat-screen');
+            const newChatScreen = document.getElementById('new-chat-screen');
+            
+            if (chatScreen.classList.contains('active') || newChatScreen.classList.contains('active')) {
+                showListScreen(false);
+            }
+        });
+
+        let trashStorage = [];
+
+        // 20 Full Detailed Conversations Including Complete JazzCash History
         let messageThreads = {
-            "0333 7685366": { unread: false, archived: false, messages: [{ text: "923337685366 ne apko 2 bar 2026-08-11 09:45PM aur 2026-08-11 09:45PM k darmeyan mein calls ki thi.", time: "9:45 PM", type: "received" }] },
-            "Imran": { unread: false, archived: false, messages: [{ text: "Texting with Imran (SMS/MMS)", time: "4:45 PM", type: "received" }] },
-            "8558": { unread: false, archived: false, messages: [{ text: "Dear AZIZ BIBI, an amount of Rs. 200 has been successfully sent to BASHEER AHMED of IBAN No: *******8883 on 2026-08-11 at 14:24:36.", time: "2:24 PM", type: "received" }] },
-            "JAZZ 5G": { unread: true, archived: false, messages: [{ text: "500 MBs MUFT DATA! Ap ko 500MBs muft data mil gya hai", time: "Tue", type: "received" }] },
-            "JazzCash": { unread: true, archived: false, messages: [{ text: "Tabiyat kharab ho to ilaaj ka sochiye, bill ka nahin.", time: "Tue", type: "received" }] }
+            "8558": { unread: false, archived: false, messages: [
+                { text: "Dear BASHEER AHMED, Rs. 1,450.00 Electricity Bill paid for Consumer No 123456789. TID 8194012291. Bal: Rs 780.46", timestamp: Date.now() - 86400000 * 5, type: "received" },
+                { text: "Rs 500.00 sent to Molar Imtiaz, A/C: 0328****952 on 10/08/2026. Fee: Rs 1.00, TID: 7289102931 via JazzCash", timestamp: Date.now() - 86400000 * 3, type: "received" },
+                { text: "Rs 200.00 sent to BASHEER AHMED, A/C: ****8883 via RAAST on 11/08/2026. TID: 7291049201", timestamp: Date.now() - 86400000 * 1, type: "received" },
+                { text: "Rs 780.46 is your available balance on JazzCash Mobile A/C: ANAM SABUR. Fee: 0.58", timestamp: Date.now() - 3600000, type: "received" }
+            ]},
+            "JazzCash": { unread: true, archived: false, messages: [
+                { text: "Welcome to JazzCash! Dial *786# anytime to transfer money, pay bills, and load mobile.", timestamp: Date.now() - 86400000 * 10, type: "received" },
+                { text: "Tabiyat kharab ho to ilaaj ka sochiye, bill ka nahin. Get Health Insurance now!", timestamp: Date.now() - 7200000, type: "received" }
+            ]},
+            "0308 8085231": { unread: false, archived: false, messages: [
+                { text: "ANAM SABUR - JazzCash Account Active.", timestamp: Date.now() - 86400000 * 2, type: "received" }
+            ]},
+            "0300 7421652": { unread: false, archived: false, messages: [
+                { text: "SARFRAZ AHMAD: Call me when you get free.", timestamp: Date.now() - 86400000, type: "received" }
+            ]},
+            "0328 6454952": { unread: false, archived: false, messages: [
+                { text: "Molar Imtiaz: Payment received thank you.", timestamp: Date.now() - 18000000, type: "received" }
+            ]},
+            "Easypaisa": { unread: false, archived: false, messages: [
+                { text: "Rs. 1000 received from Imran Ali in your Easypaisa Account. New Balance: Rs 2450.", timestamp: Date.now() - 86400000 * 4, type: "received" }
+            ]},
+            "0313 1472760": { unread: false, archived: false, messages: [
+                { text: "Imran Ali: Please send the code.", timestamp: Date.now() - 43200000, type: "received" }
+            ]},
+            "Raast": { unread: false, archived: false, messages: [
+                { text: "Your Raast ID PK92JAZZ00001234567890 has been linked successfully.", timestamp: Date.now() - 86400000 * 6, type: "received" }
+            ]},
+            "SadaPay": { unread: false, archived: false, messages: [
+                { text: "Money Sent! Rs 350 transferred to BASHEER AHMED.", timestamp: Date.now() - 86400000 * 3, type: "received" }
+            ]},
+            "NayaPay": { unread: false, archived: false, messages: [
+                { text: "Your Visa Virtual Card is active for online shopping.", timestamp: Date.now() - 86400000 * 7, type: "received" }
+            ]},
+            "Upaisa": { unread: false, archived: false, messages: [
+                { text: "Upaisa Mega Offer: Get 5GB Data on Load.", timestamp: Date.now() - 86400000 * 8, type: "received" }
+            ]},
+            "JAZZ 5G": { unread: true, archived: false, messages: [
+                { text: "500 MBs MUFT DATA! Ap ko 500MBs muft data mil gya hai.", timestamp: Date.now() - 14400000, type: "received" }
+            ]},
+            "0345 7174930": { unread: false, archived: false, messages: [
+                { text: "Zeenab: Did you receive the file?", timestamp: Date.now() - 86400000 * 2, type: "received" }
+            ]},
+            "0300 4812390": { unread: false, archived: false, messages: [
+                { text: "Asif Khlid J: Shop is open.", timestamp: Date.now() - 86400000 * 4, type: "received" }
+            ]},
+            "0328 8913250": { unread: false, archived: false, messages: [
+                { text: "Chacha Riaz: Call back.", timestamp: Date.now() - 86400000 * 5, type: "received" }
+            ]},
+            "HBL": { unread: false, archived: false, messages: [
+                { text: "A/C *1029 credited with Rs 5,000.00.", timestamp: Date.now() - 86400000 * 9, type: "received" }
+            ]},
+            "Zong4G": { unread: false, archived: false, messages: [
+                { text: "Your MBB Bundle has been renewed.", timestamp: Date.now() - 86400000 * 11, type: "received" }
+            ]},
+            "Telenor": { unread: false, archived: false, messages: [
+                { text: "Emergency Load of Rs. 30 credited.", timestamp: Date.now() - 86400000 * 12, type: "received" }
+            ]},
+            "8171": { unread: false, archived: false, messages: [
+                { text: "Aap Ehsaas / BISP Program ke liye ahal hain.", timestamp: Date.now() - 86400000 * 15, type: "received" }
+            ]},
+            "981562047": { unread: false, archived: false, messages: [
+                { text: "MASHALLAH MOBILE SHOP Till Payment Confirmation.", timestamp: Date.now() - 86400000 * 1, type: "received" }
+            ]}
         };
 
         let currentActiveChat = "";
         let selectedMessageIndices = [];
         let isChatSelectionMode = false;
-
         let selectedInboxSenders = [];
         let isInboxSelectionMode = false;
         let isInitialLoad = true;
@@ -373,25 +536,28 @@
 
             const sender = data.sender || '8558';
             const msgText = data.msg || '';
-            const timestamp = data.timestamp ? new Date(data.timestamp) : new Date();
-            const timeFormatted = timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const msgTime = data.timestamp ? data.timestamp : Date.now();
 
             if (!messageThreads[sender]) {
                 messageThreads[sender] = { unread: false, archived: false, messages: [] };
             }
 
-            messageThreads[sender].messages.unshift({
+            messageThreads[sender].messages.push({
                 text: msgText,
-                time: timeFormatted,
+                timestamp: msgTime,
                 type: 'received'
             });
             
             messageThreads[sender].unread = true;
             renderInboxList();
 
+            if (currentActiveChat === sender) {
+                renderChatBubbles();
+            }
+
             if (!isInitialLoad) {
-                playSingleBeepSound();
-                showSystemNotification(sender, msgText);
+                playNotificationSoundAndVibrate();
+                showSystemBannerNotification(sender, msgText);
             }
         });
 
@@ -401,18 +567,46 @@
             renderInboxList();
         };
 
-        function renderInboxList() {
+        function formatDateDivider(ts) {
+            const msgDate = new Date(ts);
+            const now = new Date();
+            const diffTime = Math.abs(now - msgDate);
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays === 0 && now.getDate() === msgDate.getDate()) {
+                return "Today";
+            } else if (diffDays === 1 || (diffDays === 0 && now.getDate() !== msgDate.getDate())) {
+                return "Yesterday";
+            } else if (diffDays < 7) {
+                const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                return days[msgDate.getDay()];
+            } else {
+                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                return `${msgDate.getDate()} ${months[msgDate.getMonth()]} ${msgDate.getFullYear()}`;
+            }
+        }
+
+        function formatMessageTime(ts) {
+            return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function renderInboxList(filterQuery = "") {
             const list = document.getElementById('main-inbox-list');
             let html = '';
 
             for (let sender in messageThreads) {
                 let threadObj = messageThreads[sender];
-                if (threadObj.archived) continue; // Skip archived chats from inbox
+                if (threadObj.archived) continue;
 
                 let thread = threadObj.messages;
                 if (thread.length === 0) continue;
 
-                let latestMsg = thread[0];
+                let latestMsg = thread[thread.length - 1];
+
+                if (filterQuery && !sender.toLowerCase().includes(filterQuery.toLowerCase()) && !latestMsg.text.toLowerCase().includes(filterQuery.toLowerCase())) {
+                    continue;
+                }
+
                 let avatarBg = getAvatarColor(sender);
                 let initial = sender.charAt(0).toUpperCase();
                 let badgeHtml = threadObj.unread ? `<span class="unread-badge">${thread.length}</span>` : '';
@@ -429,7 +623,7 @@
                         <div class="message-content">
                             <div class="message-header">
                                 <span class="sender-name">${sender}</span>
-                                <span class="message-time">${latestMsg.time}</span>
+                                <span class="message-time">${formatMessageTime(latestMsg.timestamp)}</span>
                             </div>
                             <div class="message-body">
                                 <span class="message-snippet">${latestMsg.text}</span>
@@ -439,7 +633,11 @@
                     </div>
                 `;
             }
-            list.innerHTML = html || `<div style="text-align:center; padding:20px; color:#888;">No conversations</div>`;
+            list.innerHTML = html || `<div style="text-align:center; padding:20px; color:#888;">No conversations found</div>`;
+        }
+
+        function handleSearch(query) {
+            renderInboxList(query);
         }
 
         let inboxPressTimer = null;
@@ -484,20 +682,17 @@
         function updateInboxHeaderMode() {
             const bar = document.getElementById('inboxSearchBar');
             const icon = document.getElementById('inboxBackOrSearchIcon');
-            const txt = document.getElementById('inboxSearchText');
             const avatar = document.getElementById('inboxNormalAvatar');
             const actions = document.getElementById('inboxSelectionActions');
 
             if (isInboxSelectionMode) {
                 bar.classList.add('selection-mode');
                 icon.innerText = 'arrow_back';
-                txt.innerText = selectedInboxSenders.length;
                 avatar.style.display = 'none';
                 actions.style.display = 'flex';
             } else {
                 bar.classList.remove('selection-mode');
                 icon.innerText = 'search';
-                txt.innerText = 'Search messages';
                 avatar.style.display = 'flex';
                 actions.style.display = 'none';
             }
@@ -514,6 +709,7 @@
 
         function deleteSelectedChats() {
             selectedInboxSenders.forEach(sender => {
+                trashStorage.push({ sender: sender, data: messageThreads[sender] });
                 delete messageThreads[sender];
             });
             isInboxSelectionMode = false;
@@ -532,11 +728,11 @@
             selectedInboxSenders = [];
             updateInboxHeaderMode();
             renderInboxList();
-            alert("Chats archived successfully");
         }
 
         function getAvatarColor(sender) {
             if (sender.includes('Jazz') || sender === '8558') return 'bg-green';
+            if (sender.includes('Sada') || sender.includes('Naya')) return 'bg-purple';
             if (sender.length % 2 === 0) return 'bg-blue';
             return 'bg-orange';
         }
@@ -549,6 +745,8 @@
             if (messageThreads[sender]) {
                 messageThreads[sender].unread = false;
             }
+
+            history.pushState({ page: 'chat' }, 'Chat', '#chat');
 
             hideAllScreens();
             document.getElementById('chat-screen').classList.add('active');
@@ -563,9 +761,16 @@
             const chatBody = document.getElementById('chat-conversation-body');
             let thread = messageThreads[currentActiveChat] ? messageThreads[currentActiveChat].messages : [];
             
-            let bubblesHtml = `<div class="date-divider">Today</div>`;
+            let bubblesHtml = ``;
+            let lastDateLabel = "";
 
             thread.forEach((m, index) => {
+                let dateLabel = formatDateDivider(m.timestamp);
+                if (dateLabel !== lastDateLabel) {
+                    bubblesHtml += `<div class="date-divider">${dateLabel}</div>`;
+                    lastDateLabel = dateLabel;
+                }
+
                 let bubbleClass = m.type === 'sent' ? 'sent' : 'received';
                 let isSelected = selectedMessageIndices.includes(index) ? 'selected' : '';
                 
@@ -577,13 +782,20 @@
                          ontouchend="cancelLongPress()"
                          onclick="handleBubbleClick(${index})">
                         <span>${m.text}</span>
-                        <div class="timestamp">${m.time}</div>
+                        <div class="timestamp">${formatMessageTime(m.timestamp)}</div>
                     </div>
                 `;
             });
 
             chatBody.innerHTML = bubblesHtml;
-            chatBody.scrollTop = chatBody.scrollHeight;
+            scrollChatToBottom();
+        }
+
+        function scrollChatToBottom() {
+            setTimeout(() => {
+                const chatBody = document.getElementById('chat-conversation-body');
+                chatBody.scrollTop = chatBody.scrollHeight;
+            }, 100);
         }
 
         let pressTimer = null;
@@ -649,7 +861,7 @@
                 updateChatHeaderMode();
                 renderChatBubbles();
             } else {
-                showListScreen();
+                showListScreen(true);
             }
         }
 
@@ -657,7 +869,6 @@
             let thread = messageThreads[currentActiveChat].messages;
             let textToCopy = selectedMessageIndices.map(i => thread[i].text).join('\n');
             navigator.clipboard.writeText(textToCopy).then(() => {
-                alert("Message copied to clipboard");
                 isChatSelectionMode = false;
                 selectedMessageIndices = [];
                 updateChatHeaderMode();
@@ -669,6 +880,7 @@
             let thread = messageThreads[currentActiveChat].messages;
             selectedMessageIndices.sort((a, b) => b - a);
             selectedMessageIndices.forEach(i => {
+                trashStorage.push({ sender: currentActiveChat, singleMsg: thread[i] });
                 thread.splice(i, 1);
             });
 
@@ -703,15 +915,13 @@
             let msgText = inputField.value.trim();
             if (!msgText || !currentActiveChat) return;
 
-            let timeFormatted = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
             if (!messageThreads[currentActiveChat]) {
                 messageThreads[currentActiveChat] = { unread: false, archived: false, messages: [] };
             }
 
-            messageThreads[currentActiveChat].messages.unshift({
-                text: msgText,
-                time: timeFormatted,
+            messageThreads[currentActiveChat].messages.push({
+                text: `${msgText} (via SIM ${selectedSimSlot})`,
+                timestamp: Date.now(),
                 type: 'sent'
             });
 
@@ -720,29 +930,44 @@
             renderInboxList();
         }
 
-        function playSingleBeepSound() {
+        function playNotificationSoundAndVibrate() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
 
-                oscillator.type = 'sine';
-                oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, audioCtx.currentTime);
 
-                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.3);
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.6);
 
-                oscillator.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
 
-                oscillator.start();
-                oscillator.stop(audioCtx.currentTime + 0.3);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.6);
             } catch (e) {}
+
+            if ("vibrate" in navigator) {
+                navigator.vibrate([300, 150, 300]);
+            }
         }
 
-        function showSystemNotification(sender, text) {
-            if ("Notification" in window && Notification.permission === "granted") {
-                new Notification(`${sender} Messages now`, { body: text });
+        function showSystemBannerNotification(sender, text) {
+            const title = `${sender}`;
+            const options = {
+                body: text,
+                icon: 'https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/chat/default/48px.svg',
+                badge: 'https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/chat/default/48px.svg',
+                vibrate: [300, 150, 300],
+                requireInteraction: true
+            };
+
+            if (swRegistration && 'showNotification' in swRegistration) {
+                swRegistration.showNotification(title, options);
+            } else if ("Notification" in window && Notification.permission === "granted") {
+                new Notification(title, options);
             }
         }
 
@@ -750,10 +975,13 @@
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         }
 
-        function showListScreen() {
+        function showListScreen(triggerHistoryBack = true) {
             hideAllScreens();
             document.getElementById('list-screen').classList.add('active');
             renderInboxList();
+            if (triggerHistoryBack && location.hash === '#chat') {
+                history.back();
+            }
         }
 
         function showNewChatView() {
@@ -768,6 +996,63 @@
 
         function closeAccountMenu(e) {
             document.getElementById('account-modal').style.display = 'none';
+        }
+
+        function showArchivedModal() {
+            closeAccountMenu();
+            const modalList = document.getElementById('secondaryModalList');
+            document.getElementById('secondaryModalTitle').innerText = "Archived Chats";
+            let html = "";
+
+            for (let sender in messageThreads) {
+                if (messageThreads[sender].archived) {
+                    html += `<div style="padding:10px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
+                        <span><b>${sender}</b></span>
+                        <button onclick="unarchiveChat('${sender}')" style="padding:4px 8px; border-radius:10px; border:1px solid #777;">Unarchive</button>
+                    </div>`;
+                }
+            }
+
+            modalList.innerHTML = html || "<div style='color:#777;'>No archived chats found.</div>";
+            document.getElementById('secondary-modal').style.display = 'flex';
+        }
+
+        function unarchiveChat(sender) {
+            if (messageThreads[sender]) {
+                messageThreads[sender].archived = false;
+                showArchivedModal();
+                renderInboxList();
+            }
+        }
+
+        function showTrashModal() {
+            closeAccountMenu();
+            const modalList = document.getElementById('secondaryModalList');
+            document.getElementById('secondaryModalTitle').innerText = "Trash / Deleted Messages";
+            let html = "";
+
+            trashStorage.forEach((item, idx) => {
+                let name = item.sender;
+                let txt = item.singleMsg ? item.singleMsg.text : "Full Chat Deleted";
+                html += `<div style="padding:8px 0; border-bottom:1px dashed #ccc; font-size:13px;">
+                    <b>${name}:</b> ${txt}
+                </div>`;
+            });
+
+            modalList.innerHTML = html || "<div style='color:#777;'>Trash is empty.</div>";
+            document.getElementById('secondary-modal').style.display = 'flex';
+        }
+
+        function closeSecondaryModal() {
+            document.getElementById('secondary-modal').style.display = 'none';
+        }
+
+        function markAllAsRead() {
+            for (let sender in messageThreads) {
+                messageThreads[sender].unread = false;
+            }
+            renderInboxList();
+            closeAccountMenu();
         }
     </script>
 </body>
