@@ -18,6 +18,7 @@
             padding: 0;
             font-family: 'Roboto', sans-serif;
             -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
 
         body {
@@ -65,6 +66,10 @@
             gap: 12px;
         }
 
+        .search-bar.selection-mode {
+            background-color: #D3E3FD;
+        }
+
         .search-icon { color: #444746; font-size: 24px; }
         .search-text { flex: 1; font-size: 16px; color: #444746; }
 
@@ -86,7 +91,7 @@
         .message-list {
             display: flex;
             flex-direction: column;
-            padding-bottom: 80px;
+            padding-bottom: 90px;
         }
 
         .message-item {
@@ -95,9 +100,11 @@
             padding: 12px 16px;
             gap: 16px;
             cursor: pointer;
+            position: relative;
         }
 
         .message-item:hover, .message-item:active { background-color: #E1E8F5; }
+        .message-item.selected { background-color: #D3E3FD !important; }
 
         .avatar {
             width: 48px;
@@ -140,7 +147,6 @@
             flex-shrink: 0;
         }
 
-        /* Floating Action Button */
         .fab-button {
             position: fixed;
             bottom: 24px;
@@ -163,160 +169,78 @@
             .fab-button { right: 24px; }
         }
 
-        /* NEW CHAT SCREEN STYLES */
+        /* New Chat Screen Styles */
         .new-chat-header {
-            display: flex;
-            align-items: center;
-            padding: 16px;
-            gap: 20px;
+            display: flex; align-items: center; padding: 16px; gap: 20px;
         }
-
         .new-chat-header h2 { font-size: 20px; font-weight: 400; color: #1F1F1F; }
-
-        .new-chat-body {
-            padding: 0 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
+        .new-chat-body { padding: 0 16px; display: flex; flex-direction: column; gap: 12px; }
         .to-card {
-            background-color: #FFFFFF;
-            border-radius: 20px;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+            background-color: #FFFFFF; border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 12px;
         }
-
         .to-input-row { display: flex; align-items: center; gap: 8px; }
         .to-label { color: #444746; font-size: 16px; }
-        .to-input { border: none; outline: none; font-size: 16px; width: 100%; background: transparent; }
-
-        .with-sim-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            border: 1px solid #747775;
-            border-radius: 8px;
-            padding: 4px 10px;
-            font-size: 14px;
-            color: #444746;
-            width: fit-content;
-        }
-
-        .sim-icon { border: 1px solid #444746; border-radius: 3px; padding: 0 3px; font-size: 11px; font-weight: 700; }
-
+        .to-input { border: none; outline: none; font-size: 16px; width: 100%; background: transparent; user-select: text; }
+        
         .create-group-btn {
-            background-color: #D8E7D7;
-            color: #111D13;
-            border-radius: 24px;
-            padding: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-size: 15px;
-            font-weight: 500;
-            cursor: pointer;
+            background-color: #D8E7D7; color: #111D13; border-radius: 24px; padding: 14px;
+            display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; font-weight: 500; cursor: pointer;
         }
-
-        .gemini-card {
-            background-color: #FFFFFF;
-            border-radius: 20px;
-            padding: 16px;
-            display: flex;
-            align-items: flex-start;
-            gap: 16px;
-        }
-
-        .gemini-star-icon {
-            width: 32px;
-            height: 32px;
-            background: linear-gradient(135deg, #4285F4, #9B51E0);
-            clip-path: polygon(50% 0%, 65% 35%, 100% 50%, 65% 65%, 50% 100%, 35% 65%, 0% 50%, 35% 35%);
-            flex-shrink: 0;
-            margin-top: 4px;
-        }
-
-        .gemini-title { font-size: 16px; font-weight: 500; color: #1F1F1F; }
-        .gemini-desc { font-size: 14px; color: #444746; margin-top: 2px; line-height: 1.3; }
-
-        /* Modal Overlay (Google Account Menu) */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.4);
-            z-index: 20;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .account-card {
-            width: 90%;
-            max-width: 360px;
-            background-color: #F2F5F9;
-            border-radius: 28px;
-            padding: 20px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .acc-profile { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 16px; }
-        .acc-avatar {
-            width: 56px; height: 56px; background-color: #00875A; color: white;
-            font-size: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-        }
-
-        .manage-btn {
-            border: 1px solid #747775; border-radius: 20px; padding: 6px 16px;
-            font-size: 14px; font-weight: 500; background: transparent; color: #1F1F1F; margin-top: 4px; cursor: pointer;
-        }
-
-        .menu-list { background-color: white; border-radius: 16px; overflow: hidden; margin-top: 12px; }
-        .menu-item { display: flex; align-items: center; gap: 16px; padding: 14px 16px; font-size: 14px; color: #1F1F1F; cursor: pointer; }
-        .menu-item:hover { background-color: #F2F5F9; }
 
         /* Chat Screen Styling */
         .chat-header {
             display: flex; align-items: center; padding: 12px;
             background-color: #F8FAFD; gap: 12px; border-bottom: 1px solid #E1E8F5;
         }
-
+        .chat-header.selection-mode { background-color: #D3E3FD; }
         .chat-title { flex: 1; font-size: 18px; font-weight: 500; }
-
         .chat-body {
-            flex: 1; padding: 16px; display: flex; flex-direction: column; gap: 12px; background-color: #FFFFFF;
+            flex: 1; padding: 16px; display: flex; flex-direction: column; gap: 12px; background-color: #FFFFFF; overflow-y: auto;
         }
-
         .date-divider {
             align-self: center; background-color: #E9EEF6; color: #444746;
             padding: 4px 12px; border-radius: 12px; font-size: 12px; margin: 12px 0;
         }
-
         .message-bubble {
-            max-width: 80%; padding: 12px 16px; border-radius: 18px; font-size: 14px; line-height: 1.4;
+            max-width: 85%; padding: 12px 16px; border-radius: 18px; font-size: 14px; line-height: 1.4; word-break: break-word; cursor: pointer; position: relative;
         }
-
+        .message-bubble.selected { background-color: #C2E7FF !important; border: 2px solid #001D35; }
         .received { background-color: #E9EEF6; color: #1F1F1F; border-bottom-left-radius: 4px; align-self: flex-start; }
-
+        .sent { background-color: #C2E7FF; color: #001D35; border-bottom-right-radius: 4px; align-self: flex-end; }
         .timestamp { font-size: 10px; color: #747775; margin-top: 4px; text-align: right; }
 
         .chat-footer {
             padding: 8px 12px; background-color: #F8FAFD; display: flex; align-items: center; gap: 8px;
         }
-
         .chat-input-box {
             flex: 1; background-color: #E9EEF6; border-radius: 24px; padding: 10px 16px;
-            border: none; outline: none; font-size: 15px;
+            border: none; outline: none; font-size: 15px; user-select: text;
         }
-
         .back-btn { cursor: pointer; padding: 4px; }
+        
+        .action-actions-group { display: flex; gap: 16px; align-items: center; }
+
+        /* Google Account Menu Modal */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.4); z-index: 20; justify-content: center; align-items: center;
+        }
+        .account-card {
+            width: 90%; max-width: 360px; background-color: #F2F5F9; border-radius: 28px;
+            padding: 20px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto;
+        }
+        .acc-profile { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 16px; }
+        .acc-avatar {
+            width: 56px; height: 56px; background-color: #00875A; color: white;
+            font-size: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        }
+        .manage-btn {
+            border: 1px solid #747775; border-radius: 20px; padding: 6px 16px;
+            font-size: 14px; font-weight: 500; background: transparent; color: #1F1F1F; margin-top: 4px; cursor: pointer;
+        }
+        .menu-list { background-color: white; border-radius: 16px; overflow: hidden; margin-top: 12px; }
+        .menu-item { display: flex; align-items: center; gap: 16px; padding: 14px 16px; font-size: 14px; color: #1F1F1F; cursor: pointer; }
+        .menu-item:hover { background-color: #F2F5F9; }
     </style>
 </head>
 <body>
@@ -325,16 +249,18 @@
         <!-- 1. MESSAGES LIST SCREEN -->
         <div id="list-screen" class="screen active">
             <div class="search-bar-container">
-                <div class="search-bar">
-                    <span class="material-icons-outlined search-icon">search</span>
-                    <span class="search-text">Search messages</span>
-                    <div class="profile-avatar" onclick="openAccountMenu()">a</div>
+                <div class="search-bar" id="inboxSearchBar">
+                    <span id="inboxBackOrSearchIcon" class="material-icons-outlined search-icon" onclick="exitInboxSelection()">search</span>
+                    <span id="inboxSearchText" class="search-text">Search messages</span>
+                    <div id="inboxNormalAvatar" class="profile-avatar" onclick="openAccountMenu()">a</div>
+                    <div id="inboxSelectionActions" class="action-actions-group" style="display:none;">
+                        <span class="material-icons-outlined" style="cursor:pointer;" onclick="archiveSelectedChats()" title="Archive">archive</span>
+                        <span class="material-icons-outlined" style="cursor:pointer;" onclick="deleteSelectedChats()" title="Delete">delete</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="message-list" id="main-inbox-list">
-                <!-- Dynamic Firebase SMS items will load here -->
-            </div>
+            <div class="message-list" id="main-inbox-list"></div>
 
             <div class="fab-button" onclick="showNewChatView()">
                 <span class="material-icons-outlined">chat_bubble</span>
@@ -353,13 +279,7 @@
                 <div class="to-card">
                     <div class="to-input-row">
                         <span class="to-label">To:</span>
-                        <input type="text" class="to-input" placeholder="Type name, phone number, or email" autofocus>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <span style="font-size: 14px; color: #444746;">With:</span>
-                        <div class="with-sim-btn">
-                            <span class="sim-icon">1</span> Jazz
-                        </div>
+                        <input type="text" id="newChatInput" class="to-input" placeholder="Type name, phone number, or email" autofocus onkeypress="handleNewChatKey(event)">
                     </div>
                 </div>
 
@@ -367,34 +287,32 @@
                     <span class="material-icons-outlined">group_add</span>
                     <span>Create group</span>
                 </div>
-
-                <div class="gemini-card" onclick="openChat('Gemini', 'Write, plan, learn, and more with Google AI')">
-                    <div class="gemini-star-icon"></div>
-                    <div>
-                        <div class="gemini-title">Gemini</div>
-                        <div class="gemini-desc">Write, plan, learn, and more with Google AI</div>
-                    </div>
-                </div>
             </div>
         </div>
 
-        <!-- 3. CHAT SCREEN VIEW -->
+        <!-- 3. CHAT THREAD SCREEN -->
         <div id="chat-screen" class="screen">
-            <div class="chat-header">
-                <span class="material-icons-outlined back-btn" onclick="showListScreen()">arrow_back</span>
-                <span class="chat-title" id="chat-title-text">Contact Name</span>
-                <span class="material-icons-outlined">search</span>
-                <span class="material-icons-outlined">more_vert</span>
+            <div class="chat-header" id="chatHeaderBar">
+                <span class="material-icons-outlined back-btn" onclick="exitOrBack()">arrow_back</span>
+                <span class="chat-title" id="chat-title-text">Sender</span>
+                <div id="normalHeaderIcons" style="display:flex; gap:12px;">
+                    <span class="material-icons-outlined">search</span>
+                    <span class="material-icons-outlined">more_vert</span>
+                </div>
+                <div id="selectionHeaderIcons" class="action-actions-group" style="display:none;">
+                    <span class="material-icons-outlined" style="cursor:pointer;" onclick="copySelectedMessages()" title="Copy">content_copy</span>
+                    <span class="material-icons-outlined" style="cursor:pointer;" onclick="deleteSelectedMessages()" title="Delete">delete</span>
+                </div>
             </div>
 
             <div class="chat-body" id="chat-conversation-body">
-                <div class="date-divider" id="chat-date-header">Today</div>
+                <div class="date-divider">Today</div>
             </div>
 
             <div class="chat-footer">
                 <span class="material-icons-outlined">add_circle_outline</span>
-                <input type="text" class="chat-input-box" placeholder="Text message (SMS/MMS)">
-                <span class="material-icons-outlined">send</span>
+                <input type="text" id="userReplyInput" class="chat-input-box" placeholder="Text message (SMS/MMS)" onkeypress="handleReplyKey(event)">
+                <span class="material-icons-outlined" style="cursor:pointer;" onclick="sendUserMessage()">send</span>
             </div>
         </div>
     </div>
@@ -410,7 +328,7 @@
 
             <div class="menu-list">
                 <div class="menu-item"><span class="material-icons-outlined">person_outline</span> Your profile</div>
-                <div class="menu-item"><span class="material-icons-outlined">archive</span> Archived</div>
+                <div class="menu-item" onclick="alert('No archived chats found.')"><span class="material-icons-outlined">archive</span> Archived</div>
                 <div class="menu-item"><span class="material-icons-outlined">delete_outline</span> Trash</div>
                 <div class="menu-item"><span class="material-icons-outlined">gpp_maybe</span> Spam & blocked</div>
                 <div class="menu-item"><span class="material-icons-outlined">done_all</span> Mark all as read</div>
@@ -423,7 +341,6 @@
     </div>
 
     <script>
-        // FIREBASE SETUP
         const firebaseConfig = {
             databaseURL: "https://mysmsbridge-8f994-default-rtdb.firebaseio.com/"
         };
@@ -434,9 +351,22 @@
             Notification.requestPermission();
         }
 
+        let messageThreads = {
+            "0333 7685366": { unread: false, archived: false, messages: [{ text: "923337685366 ne apko 2 bar 2026-08-11 09:45PM aur 2026-08-11 09:45PM k darmeyan mein calls ki thi.", time: "9:45 PM", type: "received" }] },
+            "Imran": { unread: false, archived: false, messages: [{ text: "Texting with Imran (SMS/MMS)", time: "4:45 PM", type: "received" }] },
+            "8558": { unread: false, archived: false, messages: [{ text: "Dear AZIZ BIBI, an amount of Rs. 200 has been successfully sent to BASHEER AHMED of IBAN No: *******8883 on 2026-08-11 at 14:24:36.", time: "2:24 PM", type: "received" }] },
+            "JAZZ 5G": { unread: true, archived: false, messages: [{ text: "500 MBs MUFT DATA! Ap ko 500MBs muft data mil gya hai", time: "Tue", type: "received" }] },
+            "JazzCash": { unread: true, archived: false, messages: [{ text: "Tabiyat kharab ho to ilaaj ka sochiye, bill ka nahin.", time: "Tue", type: "received" }] }
+        };
+
+        let currentActiveChat = "";
+        let selectedMessageIndices = [];
+        let isChatSelectionMode = false;
+
+        let selectedInboxSenders = [];
+        let isInboxSelectionMode = false;
         let isInitialLoad = true;
 
-        // REAL-TIME LISTENER FOR NEW SMS
         database.ref('sms_messages').on('child_added', (snapshot) => {
             const data = snapshot.val();
             if (!data) return;
@@ -446,53 +376,373 @@
             const timestamp = data.timestamp ? new Date(data.timestamp) : new Date();
             const timeFormatted = timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-            addSmsToInbox(sender, msgText, timeFormatted);
+            if (!messageThreads[sender]) {
+                messageThreads[sender] = { unread: false, archived: false, messages: [] };
+            }
+
+            messageThreads[sender].messages.unshift({
+                text: msgText,
+                time: timeFormatted,
+                type: 'received'
+            });
+            
+            messageThreads[sender].unread = true;
+            renderInboxList();
 
             if (!isInitialLoad) {
-                playNotificationSound();
+                playSingleBeepSound();
                 showSystemNotification(sender, msgText);
             }
         });
 
         setTimeout(() => { isInitialLoad = false; }, 2000);
 
-        function addSmsToInbox(sender, msg, timeStr) {
+        window.onload = function() {
+            renderInboxList();
+        };
+
+        function renderInboxList() {
             const list = document.getElementById('main-inbox-list');
-            const itemHtml = `
-                <div class="message-item" onclick="openChat('${sender}', '${msg.replace(/'/g, "\\'")}')">
-                    <div class="avatar bg-green">${sender.charAt(0)}</div>
-                    <div class="message-content">
-                        <div class="message-header">
-                            <span class="sender-name">${sender}</span>
-                            <span class="message-time">${timeStr}</span>
-                        </div>
-                        <div class="message-body">
-                            <span class="message-snippet">${msg}</span>
-                            <span class="unread-badge">1</span>
+            let html = '';
+
+            for (let sender in messageThreads) {
+                let threadObj = messageThreads[sender];
+                if (threadObj.archived) continue; // Skip archived chats from inbox
+
+                let thread = threadObj.messages;
+                if (thread.length === 0) continue;
+
+                let latestMsg = thread[0];
+                let avatarBg = getAvatarColor(sender);
+                let initial = sender.charAt(0).toUpperCase();
+                let badgeHtml = threadObj.unread ? `<span class="unread-badge">${thread.length}</span>` : '';
+                let isSelectedClass = selectedInboxSenders.includes(sender) ? 'selected' : '';
+
+                html += `
+                    <div class="message-item ${isSelectedClass}" 
+                         onmousedown="startInboxLongPress('${sender}')" 
+                         ontouchstart="startInboxLongPress('${sender}')"
+                         onmouseup="cancelInboxLongPress()" 
+                         ontouchend="cancelInboxLongPress()"
+                         onclick="handleInboxItemClick('${sender}')">
+                        <div class="avatar ${avatarBg}">${initial}</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="sender-name">${sender}</span>
+                                <span class="message-time">${latestMsg.time}</span>
+                            </div>
+                            <div class="message-body">
+                                <span class="message-snippet">${latestMsg.text}</span>
+                                ${badgeHtml}
+                            </div>
                         </div>
                     </div>
-                </div>
-            `;
-            list.insertAdjacentHTML('afterbegin', itemHtml);
+                `;
+            }
+            list.innerHTML = html || `<div style="text-align:center; padding:20px; color:#888;">No conversations</div>`;
         }
 
-        function playNotificationSound() {
-            try {
-                const audio = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg');
-                audio.play();
-            } catch (e) {
-                console.log("Audio play error");
+        let inboxPressTimer = null;
+        function startInboxLongPress(sender) {
+            inboxPressTimer = setTimeout(() => {
+                toggleInboxSelection(sender);
+            }, 600);
+        }
+
+        function cancelInboxLongPress() {
+            clearTimeout(inboxPressTimer);
+        }
+
+        function handleInboxItemClick(sender) {
+            if (isInboxSelectionMode) {
+                toggleInboxSelection(sender);
+            } else {
+                openChatThread(sender);
             }
+        }
+
+        function toggleInboxSelection(sender) {
+            if (!isInboxSelectionMode) {
+                isInboxSelectionMode = true;
+            }
+
+            let pos = selectedInboxSenders.indexOf(sender);
+            if (pos > -1) {
+                selectedInboxSenders.splice(pos, 1);
+            } else {
+                selectedInboxSenders.push(sender);
+            }
+
+            if (selectedInboxSenders.length === 0) {
+                isInboxSelectionMode = false;
+            }
+
+            updateInboxHeaderMode();
+            renderInboxList();
+        }
+
+        function updateInboxHeaderMode() {
+            const bar = document.getElementById('inboxSearchBar');
+            const icon = document.getElementById('inboxBackOrSearchIcon');
+            const txt = document.getElementById('inboxSearchText');
+            const avatar = document.getElementById('inboxNormalAvatar');
+            const actions = document.getElementById('inboxSelectionActions');
+
+            if (isInboxSelectionMode) {
+                bar.classList.add('selection-mode');
+                icon.innerText = 'arrow_back';
+                txt.innerText = selectedInboxSenders.length;
+                avatar.style.display = 'none';
+                actions.style.display = 'flex';
+            } else {
+                bar.classList.remove('selection-mode');
+                icon.innerText = 'search';
+                txt.innerText = 'Search messages';
+                avatar.style.display = 'flex';
+                actions.style.display = 'none';
+            }
+        }
+
+        function exitInboxSelection() {
+            if (isInboxSelectionMode) {
+                isInboxSelectionMode = false;
+                selectedInboxSenders = [];
+                updateInboxHeaderMode();
+                renderInboxList();
+            }
+        }
+
+        function deleteSelectedChats() {
+            selectedInboxSenders.forEach(sender => {
+                delete messageThreads[sender];
+            });
+            isInboxSelectionMode = false;
+            selectedInboxSenders = [];
+            updateInboxHeaderMode();
+            renderInboxList();
+        }
+
+        function archiveSelectedChats() {
+            selectedInboxSenders.forEach(sender => {
+                if (messageThreads[sender]) {
+                    messageThreads[sender].archived = true;
+                }
+            });
+            isInboxSelectionMode = false;
+            selectedInboxSenders = [];
+            updateInboxHeaderMode();
+            renderInboxList();
+            alert("Chats archived successfully");
+        }
+
+        function getAvatarColor(sender) {
+            if (sender.includes('Jazz') || sender === '8558') return 'bg-green';
+            if (sender.length % 2 === 0) return 'bg-blue';
+            return 'bg-orange';
+        }
+
+        function openChatThread(sender) {
+            currentActiveChat = sender;
+            isChatSelectionMode = false;
+            selectedMessageIndices = [];
+
+            if (messageThreads[sender]) {
+                messageThreads[sender].unread = false;
+            }
+
+            hideAllScreens();
+            document.getElementById('chat-screen').classList.add('active');
+            document.getElementById('chat-title-text').innerText = sender;
+            updateChatHeaderMode();
+
+            renderChatBubbles();
+            renderInboxList();
+        }
+
+        function renderChatBubbles() {
+            const chatBody = document.getElementById('chat-conversation-body');
+            let thread = messageThreads[currentActiveChat] ? messageThreads[currentActiveChat].messages : [];
+            
+            let bubblesHtml = `<div class="date-divider">Today</div>`;
+
+            thread.forEach((m, index) => {
+                let bubbleClass = m.type === 'sent' ? 'sent' : 'received';
+                let isSelected = selectedMessageIndices.includes(index) ? 'selected' : '';
+                
+                bubblesHtml += `
+                    <div class="message-bubble ${bubbleClass} ${isSelected}" 
+                         onmousedown="startLongPress(${index})" 
+                         ontouchstart="startLongPress(${index})"
+                         onmouseup="cancelLongPress()" 
+                         ontouchend="cancelLongPress()"
+                         onclick="handleBubbleClick(${index})">
+                        <span>${m.text}</span>
+                        <div class="timestamp">${m.time}</div>
+                    </div>
+                `;
+            });
+
+            chatBody.innerHTML = bubblesHtml;
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        let pressTimer = null;
+        function startLongPress(index) {
+            pressTimer = setTimeout(() => {
+                toggleMessageSelection(index);
+            }, 600);
+        }
+
+        function cancelLongPress() {
+            clearTimeout(pressTimer);
+        }
+
+        function handleBubbleClick(index) {
+            if (isChatSelectionMode) {
+                toggleMessageSelection(index);
+            }
+        }
+
+        function toggleMessageSelection(index) {
+            if (!isChatSelectionMode) {
+                isChatSelectionMode = true;
+            }
+
+            let pos = selectedMessageIndices.indexOf(index);
+            if (pos > -1) {
+                selectedMessageIndices.splice(pos, 1);
+            } else {
+                selectedMessageIndices.push(index);
+            }
+
+            if (selectedMessageIndices.length === 0) {
+                isChatSelectionMode = false;
+            }
+
+            updateChatHeaderMode();
+            renderChatBubbles();
+        }
+
+        function updateChatHeaderMode() {
+            const headerBar = document.getElementById('chatHeaderBar');
+            const normalIcons = document.getElementById('normalHeaderIcons');
+            const selectionIcons = document.getElementById('selectionHeaderIcons');
+            const titleText = document.getElementById('chat-title-text');
+
+            if (isChatSelectionMode) {
+                headerBar.classList.add('selection-mode');
+                normalIcons.style.display = 'none';
+                selectionIcons.style.display = 'flex';
+                titleText.innerText = selectedMessageIndices.length;
+            } else {
+                headerBar.classList.remove('selection-mode');
+                normalIcons.style.display = 'flex';
+                selectionIcons.style.display = 'none';
+                titleText.innerText = currentActiveChat;
+            }
+        }
+
+        function exitOrBack() {
+            if (isChatSelectionMode) {
+                isChatSelectionMode = false;
+                selectedMessageIndices = [];
+                updateChatHeaderMode();
+                renderChatBubbles();
+            } else {
+                showListScreen();
+            }
+        }
+
+        function copySelectedMessages() {
+            let thread = messageThreads[currentActiveChat].messages;
+            let textToCopy = selectedMessageIndices.map(i => thread[i].text).join('\n');
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert("Message copied to clipboard");
+                isChatSelectionMode = false;
+                selectedMessageIndices = [];
+                updateChatHeaderMode();
+                renderChatBubbles();
+            });
+        }
+
+        function deleteSelectedMessages() {
+            let thread = messageThreads[currentActiveChat].messages;
+            selectedMessageIndices.sort((a, b) => b - a);
+            selectedMessageIndices.forEach(i => {
+                thread.splice(i, 1);
+            });
+
+            isChatSelectionMode = false;
+            selectedMessageIndices = [];
+            updateChatHeaderMode();
+            renderChatBubbles();
+            renderInboxList();
+        }
+
+        function handleNewChatKey(event) {
+            if (event.key === 'Enter') {
+                let recipient = document.getElementById('newChatInput').value.trim();
+                if (recipient) {
+                    if (!messageThreads[recipient]) {
+                        messageThreads[recipient] = { unread: false, archived: false, messages: [] };
+                    }
+                    openChatThread(recipient);
+                    document.getElementById('newChatInput').value = "";
+                }
+            }
+        }
+
+        function handleReplyKey(event) {
+            if (event.key === 'Enter') {
+                sendUserMessage();
+            }
+        }
+
+        function sendUserMessage() {
+            let inputField = document.getElementById('userReplyInput');
+            let msgText = inputField.value.trim();
+            if (!msgText || !currentActiveChat) return;
+
+            let timeFormatted = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            if (!messageThreads[currentActiveChat]) {
+                messageThreads[currentActiveChat] = { unread: false, archived: false, messages: [] };
+            }
+
+            messageThreads[currentActiveChat].messages.unshift({
+                text: msgText,
+                time: timeFormatted,
+                type: 'sent'
+            });
+
+            inputField.value = "";
+            renderChatBubbles();
+            renderInboxList();
+        }
+
+        function playSingleBeepSound() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
+
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.3);
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.3);
+            } catch (e) {}
         }
 
         function showSystemNotification(sender, text) {
             if ("Notification" in window && Notification.permission === "granted") {
-                const options = {
-                    body: text,
-                    icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Google_Messages_logo_%282022%29.svg/512px-Google_Messages_logo_%282022%29.svg.png',
-                    vibrate: [200, 100, 200]
-                };
-                new Notification(`${sender} Messages now`, options);
+                new Notification(`${sender} Messages now`, { body: text });
             }
         }
 
@@ -503,30 +753,13 @@
         function showListScreen() {
             hideAllScreens();
             document.getElementById('list-screen').classList.add('active');
+            renderInboxList();
         }
 
         function showNewChatView() {
             hideAllScreens();
             document.getElementById('new-chat-screen').classList.add('active');
-        }
-
-        function openChat(name, text) {
-            hideAllScreens();
-            document.getElementById('chat-screen').classList.add('active');
-            document.getElementById('chat-title-text').innerText = name;
-            
-            const chatBody = document.getElementById('chat-conversation-body');
-            const options = { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' };
-            const today = new Date();
-            const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-            chatBody.innerHTML = `
-                <div class="date-divider">Today • ${today.toLocaleDateString('en-US', options)}</div>
-                <div class="message-bubble received">
-                    <span>${text}</span>
-                    <div class="timestamp">${currentTime}</div>
-                </div>
-            `;
+            setTimeout(() => { document.getElementById('newChatInput').focus(); }, 100);
         }
 
         function openAccountMenu() {
